@@ -8,10 +8,10 @@ from typing_extensions import ParamSpec, TypeVar, override
 from kontainer.core.const import Undefined, undefined
 from kontainer.maybe.maybe import Maybe
 
+ValueT = TypeVar("ValueT", infer_variance=True)
+ErrorT = TypeVar("ErrorT", infer_variance=True, bound=Exception)
 if TYPE_CHECKING:
-    ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT2 = TypeVar("ValueT2", infer_variance=True)
-    ErrorT = TypeVar("ErrorT", infer_variance=True, bound=Exception)
     ErrorT2 = TypeVar("ErrorT2", infer_variance=True, bound=Exception)
     AnotherT = TypeVar("AnotherT", infer_variance=True)
     OtherErrorT = TypeVar("OtherErrorT", infer_variance=True, bound=Exception)

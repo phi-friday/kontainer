@@ -10,10 +10,10 @@ from kontainer.core.exception import UndefinedError
 from kontainer.core.types import Container
 from kontainer.utils.generator import create_generator
 
+ValueT = TypeVar("ValueT", infer_variance=True)
+OtherT = TypeVar("OtherT", infer_variance=True)
 if TYPE_CHECKING:
-    ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT2 = TypeVar("ValueT2", infer_variance=True)
-    OtherT = TypeVar("OtherT", infer_variance=True)
     OtherT2 = TypeVar("OtherT2", infer_variance=True)
     AnotherT = TypeVar("AnotherT", infer_variance=True)
     AnotherT2 = TypeVar("AnotherT2", infer_variance=True)

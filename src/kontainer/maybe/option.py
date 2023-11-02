@@ -9,8 +9,8 @@ from kontainer.core.const import Undefined, undefined
 from kontainer.maybe.maybe import Maybe
 from kontainer.utils.generator import create_generator
 
+ValueT = TypeVar("ValueT", infer_variance=True)
 if TYPE_CHECKING:
-    ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT2 = TypeVar("ValueT2", infer_variance=True)
     AnotherT = TypeVar("AnotherT", infer_variance=True)
     ElementT = TypeVar("ElementT", infer_variance=True)

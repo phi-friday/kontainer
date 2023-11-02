@@ -3,15 +3,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Generator, Generic, NoReturn, overload
 
+from typing_extensions import TypeVar
+
 from kontainer.core.const import Undefined, undefined
 from kontainer.core.exception import UndefinedError
 
+ValueT = TypeVar("ValueT", infer_variance=True)
+OtherT = TypeVar("OtherT", infer_variance=True)
 if TYPE_CHECKING:
-    from typing_extensions import TypeVar
-
-    ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT2 = TypeVar("ValueT2", infer_variance=True)
-    OtherT = TypeVar("OtherT", infer_variance=True)
     OtherT2 = TypeVar("OtherT2", infer_variance=True)
     AnotherT = TypeVar("AnotherT", infer_variance=True)
     AnotherT2 = TypeVar("AnotherT2", infer_variance=True)
