@@ -47,6 +47,11 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     @overload
     def __new__(cls, value: ValueT2) -> Option[ValueT2]: ...
 
+    @overload
+    def __new__(
+        cls, value: ValueT2 | None | Undefined, other: Any = undefined
+    ) -> Option[ValueT2]: ...
+
     @override
     def __new__(
         cls, value: ValueT2 | None | Undefined, other: Any = undefined
@@ -86,7 +91,7 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
         self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
     ) -> Option[AnotherT]:
         if not self._has_value() or self._val is None:
-            return Maybe(undefined)
+            return Option(undefined)
 
         result = func(self._val, value)
         return Option(result)
