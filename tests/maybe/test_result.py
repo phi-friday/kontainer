@@ -12,12 +12,13 @@ from kontainer.maybe import Result
 class TestResult(BaseTestContainer):
     container_type = Result
 
-    @pytest.mark.parametrize("value", [1, "b", b"1"])
-    def test_construct_without_other(self, value: Any):
-        super().test_construct_without_other(value)
-
     @pytest.mark.parametrize(
-        ("value", "other"), [(1, "b"), ("b", (1,)), (b"1", frozenset())]
+        ("value", "other"),
+        [
+            (ValueError(1), Exception(4)),
+            (TypeError(2), ValueError(5)),
+            (Exception(3), TypeError(6)),
+        ],
     )
-    def test_construct_with_other(self, value: Any, other: Any):
-        super().test_construct_with_other(value, other)
+    def test_switch(self, value: Any, other: Any):
+        return super().test_switch(value, other)

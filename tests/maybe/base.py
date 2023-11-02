@@ -14,29 +14,64 @@ RED = "\x1b[31;20m"
 RESET = "\x1b[0m"
 
 
+def _func_as_value_container(
+    func: Callable[..., Any], container_type: type[Container]
+) -> Callable[..., Container]:
+    def inner(*args: Any) -> Container[Any, Any]:
+        result = func(*args)
+        if isinstance(result, container_type):
+            return result
+        return container_type(result)
+
+    return inner
+
+
+def _func_as_other_container(
+    func: Callable[..., Any], container_type: type[Container]
+) -> Callable[..., Container]:
+    def inner(*args: Any) -> Container[Any, Any]:
+        result = func(*args)
+        if isinstance(result, container_type):
+            return result
+        return container_type(undefined, result)
+
+    return inner
+
+
+def _generate_getter(value: Any) -> Callable[[], Any]:
+    def inner() -> Any:
+        return value
+
+    return inner
+
+
+class _Const: ...
+
+
+const = _Const()
+
+
 class BaseTestContainer:
     container_type: ClassVar[type[Container]]
 
     def test_container_type(self):
         assert issubclass(self.container_type, Container)
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize("value", [1, "b", b"1"])
     def test_construct_without_other(self, value: Any):
         container = self.container_type(value)
         assert isinstance(container, self.container_type)
         assert container._value == value
         assert container._other is undefined
 
-        return container
-
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "other"), [(1, "b"), ("b", (1,)), (b"1", frozenset())]
+    )
     def test_construct_with_other(self, value: Any, other: Any):
         container = self.container_type(value, other)
         assert isinstance(container, self.container_type)
         assert container._value == value
         assert container._other == other
-
-        return container
 
     def test_error_construct_only_undefined_without_other(self):
         with pytest.raises(UndefinedError):
@@ -77,19 +112,41 @@ class BaseTestContainer:
             assert exc.value == value  # noqa: PT017
 
     @pytest.mark.parametrize("value", [1, "b", b"b", ()])
-    @pytest.mark.asyncio()
-    async def test_await(self, value: Any):
+    @pytest.mark.anyio()
+    async def test_await(self, anyio_backend: Any, value: Any):
+        if anyio_backend == "trio" or (
+            isinstance(anyio_backend, tuple)
+            and anyio_backend
+            and anyio_backend[0] == "trio"
+        ):
+            pytest.skip()
         container = self.container_type(value)
         result = await container
         assert result == value
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
     def test_map_value(self, value: Any, func: Callable[[Any], Any], result: Any):
         container = self.container_type(value)
         new = container.map_value(func)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "other", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_map_values(
         self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
@@ -97,13 +154,29 @@ class BaseTestContainer:
         new = container.map_values(func, other)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
     def test_map_other(self, other: Any, func: Callable[[Any], Any], result: Any):
         container = self.container_type(undefined, other)
         new = container.map_other(func)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "another", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_map_others(
         self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
@@ -111,13 +184,29 @@ class BaseTestContainer:
         new = container.map_others(func, another)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
     def test_alt_value(self, value: Any, func: Callable[[Any], Any], result: Any):
         container = self.container_type(value)
         new = container.alt_value(func)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "other", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_alt_values(
         self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
@@ -125,13 +214,29 @@ class BaseTestContainer:
         new = container.alt_values(func, other)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
     def test_alt_other(self, other: Any, func: Callable[[Any], Any], result: Any):
         container = self.container_type(undefined, other)
         new = container.alt_other(func)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "another", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_alt_others(
         self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
@@ -139,114 +244,187 @@ class BaseTestContainer:
         new = container.alt_others(func, another)
         assert new._value == result
 
-    @pytest.mark.skip()
-    def test_bind_value(
-        self, value: Any, func: Callable[[Any], Container], result: Any
-    ):
+    @pytest.mark.parametrize(
+        ("value", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
+    def test_bind_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+        func = _func_as_value_container(func, self.container_type)
+
         container = self.container_type(value)
         new = container.bind_value(func)
+        assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "other", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_bind_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Container], result: Any
+        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
+        func = _func_as_value_container(func, self.container_type)
+
         container = self.container_type(value)
         new = container.bind_values(func, other)
+        assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.skip()
-    def test_bind_other(
-        self, other: Any, func: Callable[[Any], Container], result: Any
-    ):
+    @pytest.mark.parametrize(
+        ("other", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
+    def test_bind_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+        func = _func_as_other_container(func, self.container_type)
+
         container = self.container_type(undefined, other)
         new = container.bind_other(func)
+        assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "another", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_bind_others(
-        self,
-        other: Any,
-        another: Any,
-        func: Callable[[Any, Any], Container],
-        result: Any,
+        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
+        func = _func_as_other_container(func, self.container_type)
+
         container = self.container_type(undefined, other)
         new = container.bind_others(func, another)
+        assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.skip()
-    def test_lash_value(
-        self, value: Any, func: Callable[[Any], Container], result: Any
-    ):
+    @pytest.mark.parametrize(
+        ("value", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
+    def test_lash_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+        func = _func_as_other_container(func, self.container_type)
+
         container = self.container_type(value)
         new = container.lash_value(func)
+        assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("value", "other", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_lash_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Container], result: Any
+        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
+        func = _func_as_other_container(func, self.container_type)
+
         container = self.container_type(value)
         new = container.lash_values(func, other)
+        assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.skip()
-    def test_lash_other(
-        self, other: Any, func: Callable[[Any], Container], result: Any
-    ):
+    @pytest.mark.parametrize(
+        ("other", "func", "result"),
+        [
+            (1, lambda x: x + 1, 2),
+            ("text", lambda x: x + "suffix", "textsuffix"),
+            (b"text", lambda x: x + b"suffix", b"textsuffix"),
+            ((), lambda x: (*x, 123), (123,)),
+        ],
+    )
+    def test_lash_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+        func = _func_as_value_container(func, self.container_type)
+
         container = self.container_type(undefined, other)
         new = container.lash_other(func)
+        assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(
+        ("other", "another", "func", "result"),
+        [
+            (1, 2, lambda x, y: x * y, 2),
+            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
+            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
+            ((), (123,), lambda x, y: (*x, *y), (123,)),
+        ],
+    )
     def test_lash_others(
-        self,
-        other: Any,
-        another: Any,
-        func: Callable[[Any, Any], Container],
-        result: Any,
+        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
+        func = _func_as_value_container(func, self.container_type)
+
         container = self.container_type(undefined, other)
         new = container.lash_others(func, another)
+        assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize(("value", "other"), [(1, 2), (1, "b"), (b"b", 11)])
     def test_switch(self, value: Any, other: Any):
         container = self.container_type(value, other)
         new = container.switch()
+        assert isinstance(new, self.container_type)
         assert container._value == new._other
         assert container._other == new._value
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize("value", list(range(10)))
     def test_default(self, value: Any):
         container = self.container_type(undefined, Exception())
         default = container.default(value)
         assert default == value
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize("value", list(range(10)))
     def test_non_default(self, value: Any):
-        result = 1 if value == 1 else 2
+        result = const
         container = self.container_type(result)
         default = container.default(value)
         assert default != value
         assert default == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
     def test_map_default(self, func: Callable[[], Any]):
         container = self.container_type(undefined, Exception())
         result = func()
         default = container.map_default(func)
         assert default == result
 
-    @pytest.mark.skip()
+    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
     def test_map_non_default(self, func: Callable[[], Any]):
-        result = func()
-        new_result = 1 if result == 1 else 2
+        value = func()
+        result = const
         container = self.container_type(result)
         default = container.map_default(func)
-        assert default != result
-        assert default == new_result
+        assert default != value
+        assert default == result
 
     def test_warn(self):
         for key in dir(self):
