@@ -48,7 +48,9 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     def __new__(cls, value: ValueT2) -> Option[ValueT2]: ...
 
     @override
-    def __new__(cls, value: ValueT2 | None | Undefined) -> Option[ValueT2]:
+    def __new__(
+        cls, value: ValueT2 | None | Undefined, other: Any = undefined
+    ) -> Option[ValueT2]:
         return super().__new__(cls, value)  # type: ignore
 
     def _has_value(self) -> bool:
