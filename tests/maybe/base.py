@@ -4,6 +4,8 @@ import warnings
 from typing import Any, Callable, ClassVar
 
 import pytest
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
 
 from kontainer.core.const import undefined
 from kontainer.core.exception import UndefinedError
@@ -57,16 +59,16 @@ class BaseTestContainer:
     def test_container_type(self):
         assert issubclass(self.container_type, Container)
 
-    @pytest.mark.parametrize("value", [1, "b", b"1"])
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_construct_without_other(self, value: Any):
         container = self.container_type(value)
         assert isinstance(container, self.container_type)
         assert container._value == value
         assert container._other is undefined
 
-    @pytest.mark.parametrize(
-        ("value", "other"), [(1, "b"), ("b", (1,)), (b"1", frozenset())]
-    )
+    @given(st.integers(), st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_construct_with_other(self, value: Any, other: Any):
         container = self.container_type(value, other)
         assert isinstance(container, self.container_type)
@@ -81,26 +83,28 @@ class BaseTestContainer:
         with pytest.raises(UndefinedError):
             self.container_type(undefined, undefined)
 
-    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_eq(self, value: Any):
         left, right = self.container_type(value), self.container_type(value)
         assert left == right
 
-    @pytest.mark.parametrize(
-        ("value", "other"), [(1, 2), ("b", "a"), (b"b", b"q"), ((), (1,))]
-    )
+    @given(st.integers(min_value=1), st.integers(max_value=-1))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_ne(self, value: Any, other: Any):
         assert value != other
 
         left, right = self.container_type(value), self.container_type(other)
         assert left != right
 
-    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_hash(self, value: Any):
         container = self.container_type(value)
         assert hash(container) == hash(value)
 
-    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_iter(self, value: Any):
         container = self.container_type(value)
         iter_container = iter(container)
@@ -151,7 +155,7 @@ class BaseTestContainer:
         self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
         container = self.container_type(value)
-        new = container.map_values(func, other)
+        new = container.map_values(other, func)
         assert new._value == result
 
     @pytest.mark.parametrize(
@@ -181,7 +185,7 @@ class BaseTestContainer:
         self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
         container = self.container_type(undefined, other)
-        new = container.map_others(func, another)
+        new = container.map_others(another, func)
         assert new._other == result
 
     @pytest.mark.parametrize(
@@ -211,7 +215,7 @@ class BaseTestContainer:
         self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
     ):
         container = self.container_type(value)
-        new = container.alt_values(func, other)
+        new = container.alt_values(other, func)
         assert new._other == result
 
     @pytest.mark.parametrize(
@@ -241,7 +245,7 @@ class BaseTestContainer:
         self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ):
         container = self.container_type(undefined, other)
-        new = container.alt_others(func, another)
+        new = container.alt_others(another, func)
         assert new._value == result
 
     @pytest.mark.parametrize(
@@ -276,7 +280,7 @@ class BaseTestContainer:
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(value)
-        new = container.bind_values(func, other)
+        new = container.bind_values(other, func)
         assert isinstance(new, self.container_type)
         assert new._value == result
 
@@ -312,7 +316,7 @@ class BaseTestContainer:
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
-        new = container.bind_others(func, another)
+        new = container.bind_others(another, func)
         assert isinstance(new, self.container_type)
         assert new._other == result
 
@@ -348,7 +352,7 @@ class BaseTestContainer:
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(value)
-        new = container.lash_values(func, other)
+        new = container.lash_values(other, func)
         assert isinstance(new, self.container_type)
         assert new._other == result
 
@@ -384,7 +388,7 @@ class BaseTestContainer:
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
-        new = container.lash_others(func, another)
+        new = container.lash_others(another, func)
         assert isinstance(new, self.container_type)
         assert new._value == result
 
@@ -396,13 +400,15 @@ class BaseTestContainer:
         assert container._value == new._other
         assert container._other == new._value
 
-    @pytest.mark.parametrize("value", list(range(10)))
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_default(self, value: Any):
         container = self.container_type(undefined, Exception())
         default = container.default(value)
         assert default == value
 
-    @pytest.mark.parametrize("value", list(range(10)))
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_non_default(self, value: Any):
         result = const
         container = self.container_type(result)
@@ -425,6 +431,58 @@ class BaseTestContainer:
         default = container.map_default(func)
         assert default != value
         assert default == result
+
+    @pytest.mark.parametrize("other", list(range(10)))
+    def test_default_other(self, other: Any):
+        container = self.container_type(const)
+        default = container.default_other(other)
+        assert default == other
+
+    @pytest.mark.parametrize("other", list(range(10)))
+    def test_non_default_other(self, other: Any):
+        result = const
+        container = self.container_type(undefined, result)
+        default = container.default_other(other)
+        assert default != other
+        assert default == result
+
+    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    def test_map_default_other(self, func: Callable[[], Any]):
+        container = self.container_type(const)
+        result = func()
+        default = container.map_default_other(func)
+        assert default == result
+
+    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    def test_map_non_default_other(self, func: Callable[[], Any]):
+        value = func()
+        result = const
+        container = self.container_type(undefined, result)
+        default = container.map_default_other(func)
+        assert default != value
+        assert default == result
+
+    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
+    def test_unwrap(self, value: Any):
+        container = self.container_type(value)
+        result = container.unwrap()
+        assert result == value
+
+    def test_unwrap_error(self):
+        container = self.container_type(undefined, 1)
+        with pytest.raises(ValueError, match="does not have a value."):
+            container.unwrap()
+
+    @pytest.mark.parametrize("other", [1, "b", b"b", ()])
+    def test_unwrap_other(self, other: Any):
+        container = self.container_type(undefined, other)
+        result = container.unwrap_other()
+        assert result == other
+
+    def test_unwrap_other_error(self):
+        container = self.container_type(1)
+        with pytest.raises(ValueError, match="does not have a other."):
+            container.unwrap_other()
 
     def test_warn(self):
         for key in dir(self):

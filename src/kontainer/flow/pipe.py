@@ -25,6 +25,10 @@ __all__ = ["pipe_map", "pipe_bind"]
 
 
 @overload
+def pipe_map(container: Option[ValueT], /) -> Option[ValueT]: ...
+
+
+@overload
 def pipe_map(
     container: Option[ValueT], func0: Callable[[ValueT], ValueT0], /
 ) -> Option[ValueT0]: ...
@@ -163,6 +167,10 @@ def pipe_map(
     func10: Callable[[ValueT9], ValueT10],
     /,
 ) -> Option[ValueT10]: ...
+
+
+@overload
+def pipe_map(container: Result[ValueT, Any], /) -> Result[ValueT, Any]: ...
 
 
 @overload
@@ -307,6 +315,10 @@ def pipe_map(
 
 
 @overload
+def pipe_map(container: Maybe[ValueT, Any], /) -> Maybe[ValueT, Any]: ...
+
+
+@overload
 def pipe_map(
     container: Maybe[ValueT, Any], func0: Callable[[ValueT], ValueT0], /
 ) -> Maybe[ValueT0, Any]: ...
@@ -445,6 +457,10 @@ def pipe_map(
     func10: Callable[[ValueT9], ValueT10],
     /,
 ) -> Maybe[ValueT10, Any]: ...
+
+
+@overload
+def pipe_map(container: Container[ValueT, Any], /) -> Container[ValueT, Any]: ...
 
 
 @overload
@@ -626,6 +642,10 @@ def pipe_map(
 
 
 @overload
+def pipe_bind(container: Option[ValueT], /) -> Option[ValueT]: ...
+
+
+@overload
 def pipe_bind(
     container: Option[ValueT], func0: Callable[[ValueT], Option[ValueT0]], /
 ) -> Option[ValueT0]: ...
@@ -764,6 +784,10 @@ def pipe_bind(
     func10: Callable[[ValueT9], Option[ValueT10]],
     /,
 ) -> Option[ValueT10]: ...
+
+
+@overload
+def pipe_bind(container: Result[ValueT, Any], /) -> Result[ValueT, Any]: ...
 
 
 @overload
@@ -908,6 +932,10 @@ def pipe_bind(
 
 
 @overload
+def pipe_bind(container: Maybe[ValueT, Any], /) -> Maybe[ValueT, Any]: ...
+
+
+@overload
 def pipe_bind(
     container: Maybe[ValueT, Any], func0: Callable[[ValueT], Maybe[ValueT0, Any]], /
 ) -> Maybe[ValueT0, Any]: ...
@@ -1046,6 +1074,10 @@ def pipe_bind(
     func10: Callable[[ValueT9], Maybe[ValueT10, Any]],
     /,
 ) -> Maybe[ValueT10, Any]: ...
+
+
+@overload
+def pipe_bind(container: Container[ValueT, Any], /) -> Container[ValueT, Any]: ...
 
 
 @overload

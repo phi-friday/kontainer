@@ -118,9 +118,9 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @_maybe_to_result
     @override
     def map_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Maybe[AnotherT, ErrorT | Exception]:
-        return super().map_values(func, value)
+        return super().map_values(value, func)
 
     @_maybe_to_result
     @override
@@ -132,9 +132,9 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @_maybe_to_result
     @override
     def map_others(
-        self, func: Callable[[ErrorT, ElementT], OtherErrorT], other: ElementT
+        self, other: ElementT, func: Callable[[ErrorT, ElementT], OtherErrorT]
     ) -> Maybe[ValueT, OtherErrorT | Exception]:
-        return super().map_others(func, other)
+        return super().map_others(other, func)
 
     @_maybe_to_result
     @override
@@ -146,9 +146,9 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @_maybe_to_result
     @override
     def alt_values(
-        self, func: Callable[[ValueT, ElementT], OtherErrorT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], OtherErrorT]
     ) -> Maybe[ErrorT, OtherErrorT | Exception]:
-        return super().alt_values(func, value)
+        return super().alt_values(value, func)
 
     @_wrap_type_error
     @_non_error_maybe_to_result
@@ -162,9 +162,9 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @_non_error_maybe_to_result
     @override
     def alt_others(
-        self, func: Callable[[ErrorT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[ErrorT, ElementT], AnotherT]
     ) -> Maybe[AnotherT, ValueT | Exception]:
-        return super().alt_others(func, other)
+        return super().alt_others(other, func)
 
     @_maybe_to_result
     @override
@@ -177,10 +177,10 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @override
     def bind_values(
         self,
-        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherErrorT]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherErrorT]],
     ) -> Maybe[AnotherT, ErrorT | OtherErrorT | Exception]:
-        return super().bind_values(func, value)
+        return super().bind_values(value, func)
 
     @_maybe_to_result
     @override
@@ -193,10 +193,10 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @override
     def bind_others(
         self,
-        func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
         other: ElementT,
+        func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
     ) -> Maybe[ValueT | AnotherT, OtherErrorT | Exception]:
-        return super().bind_others(func, other)
+        return super().bind_others(other, func)
 
     @_maybe_to_result
     @override
@@ -209,10 +209,10 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @override
     def lash_values(
         self,
-        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherErrorT]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherErrorT]],
     ) -> Maybe[ErrorT | AnotherT, OtherErrorT | Exception]:
-        return super().lash_values(func, value)
+        return super().lash_values(value, func)
 
     @_wrap_type_error
     @_non_error_maybe_to_result
@@ -227,13 +227,26 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     @override
     def lash_others(
         self,
-        func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
         value: ElementT,
+        func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
     ) -> Maybe[AnotherT, ValueT | OtherErrorT | Exception]:
-        return super().lash_others(func, value)
+        return super().lash_others(value, func)
 
     @_wrap_type_error
     @_non_error_maybe_to_result
     @override
     def switch(self) -> Maybe[ErrorT, ValueT]:
         return super().switch()
+
+    @override
+    def default_other(self, other: Any) -> NoReturn:
+        raise NotImplementedError
+
+    @override
+    def map_default_other(self, func: Callable[[], Any]) -> NoReturn:
+        raise NotImplementedError
+
+    @override
+    def unwrap_other(self) -> NoReturn | None:
+        if self._has_other():
+            raise self._oth

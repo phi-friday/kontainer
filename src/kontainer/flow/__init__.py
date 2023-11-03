@@ -1,6 +1,17 @@
 from __future__ import annotations
 
-from kontainer.flow.maps import map_elements
+from kontainer.flow import flowtools
+from kontainer.flow.compose import compose_funcs
+from kontainer.flow.flip import flip_func
+from kontainer.flow.maps import bind_elements, map_elements
 from kontainer.flow.pipe import pipe_bind, pipe_map
 
-__all__ = ["pipe_map", "pipe_bind", "map_elements"]
+__all__ = [
+    "pipe_map",
+    "pipe_bind",
+    "map_elements",
+    "bind_elements",
+    "compose_funcs",
+    "flip_func",
+    "flowtools",
+]

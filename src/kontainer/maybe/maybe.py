@@ -154,7 +154,7 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @_wrap_undefined_error
     @override
     def map_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Maybe[AnotherT, OtherT | Exception]:
         if not self._has_value():
             return Maybe(undefined, self._other)
@@ -184,7 +184,7 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @_wrap_undefined_error
     @override
     def map_others(
-        self, func: Callable[[OtherT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
     ) -> Maybe[ValueT, AnotherT | Exception]:
         if not self._has_other():
             return Maybe(self._value)
@@ -214,7 +214,7 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @_wrap_undefined_error
     @override
     def alt_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Maybe[OtherT, AnotherT | Exception]:
         if not self._has_value():
             return Maybe(self._other)
@@ -244,7 +244,7 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @_wrap_undefined_error
     @override
     def alt_others(
-        self, func: Callable[[OtherT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
     ) -> Maybe[AnotherT, ValueT | Exception]:
         if not self._has_other():
             return Maybe(undefined, self._value)
@@ -275,14 +275,14 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def bind_values(
         self,
-        func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
     ) -> Maybe[AnotherT, OtherT | AnotherT2 | Exception]:
         if not self._has_value():
             return Maybe(undefined, self._other)
 
         try:
-            nested = self.map_values(func, value)
+            nested = self.map_values(value, func)
         except Exception as exc:  # noqa: BLE001
             return Maybe(undefined, exc)
 
@@ -311,14 +311,14 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def bind_others(
         self,
-        func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
         other: ElementT,
+        func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
     ) -> Maybe[ValueT | AnotherT, AnotherT2 | Exception]:
         if not self._has_other():
             return Maybe(self._value, undefined)
 
         try:
-            nested = self.map_others(func, other)
+            nested = self.map_others(other, func)
         except Exception as exc:  # noqa: BLE001
             return Maybe(undefined, exc)
 
@@ -351,14 +351,14 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def lash_values(
         self,
-        func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
     ) -> Maybe[OtherT | AnotherT, AnotherT2 | Exception]:
         if not self._has_value():
             return Maybe(self._other, undefined)
 
         try:
-            nested = self.alt_values(func, value)
+            nested = self.alt_values(value, func)
         except Exception as exc:  # noqa: BLE001
             return Maybe(undefined, exc)
 
@@ -391,14 +391,14 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def lash_others(
         self,
-        func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
     ) -> Maybe[AnotherT, ValueT | AnotherT2 | Exception]:
         if not self._has_other():
             return Maybe(undefined, self._value)
 
         try:
-            nested = self.alt_others(func, value)
+            nested = self.alt_others(value, func)
         except Exception as exc:  # noqa: BLE001
             return Maybe(undefined, exc)
 
@@ -423,3 +423,23 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         if self._has_value():
             return self._val
         return func()
+
+    @override
+    def default_other(self, other: AnotherT) -> OtherT | AnotherT:
+        if self._has_other():
+            return self._oth
+        return other
+
+    @override
+    def map_default_other(self, func: Callable[[], AnotherT]) -> OtherT | AnotherT:
+        if self._has_other():
+            return self._oth
+        return func()
+
+    @override
+    def unwrap(self) -> ValueT:
+        return self._val
+
+    @override
+    def unwrap_other(self) -> OtherT:
+        return self._oth

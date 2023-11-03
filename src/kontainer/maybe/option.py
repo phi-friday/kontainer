@@ -88,7 +88,7 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
 
     @override
     def map_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Option[AnotherT]:
         if not self._has_value() or self._val is None:
             return Option(undefined)
@@ -116,8 +116,8 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     @override
     def map_others(
         self,
-        func: Callable[[None, ElementT], AnotherT] | Callable[[ElementT], AnotherT],
         other: ElementT,
+        func: Callable[[None, ElementT], AnotherT] | Callable[[ElementT], AnotherT],
     ) -> Option[ValueT | AnotherT]:
         if self._has_value():
             return Option(self._val)
@@ -141,10 +141,10 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     @override
     def alt_values(
         self,
-        func: Callable[[None, ElementT], AnotherT] | Callable[[ElementT], AnotherT],
         value: ElementT,
+        func: Callable[[None, ElementT], AnotherT] | Callable[[ElementT], AnotherT],
     ) -> Option[ValueT | AnotherT]:
-        return self.map_others(func, value)
+        return self.map_others(value, func)
 
     @override
     def alt_other(self, func: Callable[[ValueT], AnotherT]) -> Option[AnotherT]:
@@ -152,9 +152,9 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
 
     @override
     def alt_others(
-        self, func: Callable[[ValueT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Option[AnotherT]:
-        return self.map_values(func, other)
+        return self.map_values(other, func)
 
     @override
     def bind_value(
@@ -171,12 +171,12 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
 
     @override
     def bind_values(
-        self, func: Callable[[ValueT, ElementT], Option[AnotherT]], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], Option[AnotherT]]
     ) -> Option[AnotherT]:
         if not self._has_value():
             return Option(undefined)
 
-        nested = self.map_values(func, value)
+        nested = self.map_values(value, func)
         result = nested._val  # noqa: SLF001
         if result is None:
             return Option(None)
@@ -200,14 +200,14 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     @override
     def bind_others(
         self,
+        other: ElementT,
         func: Callable[[None, ElementT], Option[AnotherT]]
         | Callable[[ElementT], Option[AnotherT]],
-        other: ElementT,
     ) -> Option[ValueT | AnotherT]:
         if self._has_value():
             return Option(self._val)
 
-        nested = self.map_others(func, other)
+        nested = self.map_others(other, func)
         result = nested._val  # noqa: SLF001
         if result is None:
             return Option(None)
@@ -224,11 +224,11 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
     @override
     def lash_values(
         self,
+        value: ElementT,
         func: Callable[[None, ElementT], Option[AnotherT]]
         | Callable[[ElementT], Option[AnotherT]],
-        value: ElementT,
     ) -> Option[ValueT | AnotherT]:
-        return self.bind_others(func, value)
+        return self.bind_others(value, func)
 
     @override
     def lash_other(
@@ -238,10 +238,26 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
 
     @override
     def lash_others(
-        self, func: Callable[[ValueT, ElementT], Option[AnotherT]], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], Option[AnotherT]]
     ) -> Option[AnotherT]:
-        return self.bind_values(func, value)
+        return self.bind_values(value, func)
 
     @override
     def switch(self) -> NoReturn:
+        raise NotImplementedError
+
+    @override
+    def default_other(self, other: Any) -> NoReturn:
+        raise NotImplementedError
+
+    @override
+    def map_default_other(self, func: Callable[[], Any]) -> NoReturn:
+        raise NotImplementedError
+
+    @override
+    def unwrap(self) -> ValueT | None:
+        return self._val
+
+    @override
+    def unwrap_other(self) -> NoReturn:
         raise NotImplementedError

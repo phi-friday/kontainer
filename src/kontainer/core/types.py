@@ -104,7 +104,7 @@ class Container(ABC, Generic[ValueT, OtherT]):
 
     @abstractmethod
     def map_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Container[AnotherT, OtherT | Exception]: ...
 
     @abstractmethod
@@ -114,7 +114,7 @@ class Container(ABC, Generic[ValueT, OtherT]):
 
     @abstractmethod
     def map_others(
-        self, func: Callable[[OtherT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
     ) -> Container[ValueT, AnotherT | Exception]: ...
 
     @abstractmethod
@@ -124,7 +124,7 @@ class Container(ABC, Generic[ValueT, OtherT]):
 
     @abstractmethod
     def alt_values(
-        self, func: Callable[[ValueT, ElementT], AnotherT], value: ElementT
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
     ) -> Container[OtherT, AnotherT | Exception]: ...
 
     @abstractmethod
@@ -134,7 +134,7 @@ class Container(ABC, Generic[ValueT, OtherT]):
 
     @abstractmethod
     def alt_others(
-        self, func: Callable[[OtherT, ElementT], AnotherT], other: ElementT
+        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
     ) -> Container[AnotherT, ValueT | Exception]: ...
 
     @abstractmethod
@@ -145,8 +145,8 @@ class Container(ABC, Generic[ValueT, OtherT]):
     @abstractmethod
     def bind_values(
         self,
-        func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
     ) -> Container[AnotherT, OtherT | AnotherT2 | Exception]: ...
 
     @abstractmethod
@@ -157,8 +157,8 @@ class Container(ABC, Generic[ValueT, OtherT]):
     @abstractmethod
     def bind_others(
         self,
-        func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
         other: ElementT,
+        func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
     ) -> Container[ValueT | AnotherT, AnotherT2 | Exception]: ...
 
     @abstractmethod
@@ -169,8 +169,8 @@ class Container(ABC, Generic[ValueT, OtherT]):
     @abstractmethod
     def lash_values(
         self,
-        func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
     ) -> Container[OtherT | AnotherT, AnotherT2 | Exception]: ...
 
     @abstractmethod
@@ -181,8 +181,8 @@ class Container(ABC, Generic[ValueT, OtherT]):
     @abstractmethod
     def lash_others(
         self,
-        func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
         value: ElementT,
+        func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
     ) -> Container[AnotherT, ValueT | AnotherT2 | Exception]: ...
 
     @abstractmethod
@@ -193,3 +193,15 @@ class Container(ABC, Generic[ValueT, OtherT]):
 
     @abstractmethod
     def map_default(self, func: Callable[[], AnotherT]) -> ValueT | AnotherT: ...
+
+    @abstractmethod
+    def default_other(self, other: AnotherT) -> OtherT | AnotherT: ...
+
+    @abstractmethod
+    def map_default_other(self, func: Callable[[], AnotherT]) -> OtherT | AnotherT: ...
+
+    @abstractmethod
+    def unwrap(self) -> ValueT: ...
+
+    @abstractmethod
+    def unwrap_other(self) -> OtherT: ...

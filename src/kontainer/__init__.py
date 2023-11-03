@@ -4,10 +4,19 @@ from typing import Any
 
 from kontainer.core.const import undefined
 from kontainer.decorator import catch, optional, wrap
-from kontainer.flow import pipe_bind, pipe_map
+from kontainer.flow import (
+    bind_elements,
+    compose_funcs,
+    flip_func,
+    flowtools,
+    map_elements,
+    pipe_bind,
+    pipe_map,
+)
 from kontainer.maybe import Maybe, Option, Result
 
 __all__ = [
+    "flowtools",
     "Maybe",
     "Option",
     "Result",
@@ -16,6 +25,10 @@ __all__ = [
     "catch",
     "pipe_bind",
     "pipe_map",
+    "map_elements",
+    "bind_elements",
+    "compose_funcs",
+    "flip_func",
     "undefined",
     "__version__",
 ]

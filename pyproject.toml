@@ -18,6 +18,7 @@ pytest-icdiff = "^0.8"
 anyio = "^4.0.0"
 uvloop = "^0.19.0"
 trio = "^0.22.2"
+hypothesis = "^6.88.1"
 
 [tool.ruff]
 line-length = 88
@@ -113,6 +114,7 @@ ignore = [
     "D102",
     "PLR2004",
     "SLF001",
+    "E731",
 ]
 
 [tool.ruff.format]

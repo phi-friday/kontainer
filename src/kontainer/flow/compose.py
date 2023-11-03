@@ -23,6 +23,10 @@ __all__ = ["compose_funcs"]
 
 
 @overload
+def compose_funcs() -> Callable[[ValueT], ValueT]: ...
+
+
+@overload
 def compose_funcs(
     func0: Callable[[ValueT], ValueT0], /
 ) -> Callable[[ValueT], ValueT0]: ...
