@@ -36,7 +36,7 @@ __all__ = [
 __version__: str
 
 
-def __getattr__(name: str) -> Any:
+def __getattr__(name: str) -> Any:  # pragma: no cover
     from importlib.metadata import version
 
     if name == "__version__":

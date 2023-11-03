@@ -31,3 +31,27 @@ def test_pipe_bind(container_type: type[Container], xs: list[int]):
 
     assert isinstance(ys, Iterable)
     assert list(ys) == [func(x) for x in xs]
+
+
+@given(
+    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.lists(st.integers())
+)
+def test_pipe_bind_eager(container_type: type[Container], xs: list[int]):
+    func: Callable[[int], Container[int, Any]] = lambda x: container_type(x + 1)
+    xss = (container_type(x) for x in xs)
+    ys = bind_elements(xss, func, lazy=False)
+
+    assert isinstance(ys, tuple)
+    assert list(ys) == [func(x) for x in xs]
+
+
+@given(
+    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.lists(st.integers())
+)
+def test_pipe_map_eager(container_type: type[Container], xs: list[int]):
+    func: Callable[[int], int] = lambda x: x + 1
+    xss = (container_type(x) for x in xs)
+    ys = map_elements(xss, func, lazy=False)
+
+    assert isinstance(ys, tuple)
+    assert list(ys) == [container_type(func(x)) for x in xs]

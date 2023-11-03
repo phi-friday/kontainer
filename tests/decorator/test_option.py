@@ -3,13 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from kontainer import undefined
 from kontainer.decorator import optional
 from kontainer.maybe import Option
 
 
-@pytest.mark.parametrize("value", list(range(5)))
+@given(st.integers())
 def test_wrap_func(value: Any):
     @optional
     def f() -> Any:
@@ -17,7 +19,7 @@ def test_wrap_func(value: Any):
 
     maybe = f()
     assert isinstance(maybe, Option)
-    result = maybe.default(undefined)
+    result = maybe.unwrap()
     assert result == value
 
 
@@ -33,7 +35,7 @@ def test_wrap_null(null: Any):
     assert result is None
 
 
-@pytest.mark.parametrize("value", list(range(5)))
+@given(st.integers())
 def test_wrap_generator(value: Any):
     @optional
     def f() -> Any:
@@ -48,7 +50,7 @@ def test_wrap_generator(value: Any):
     assert result == value
 
 
-@pytest.mark.parametrize("value", list(range(5)))
+@given(st.integers())
 def test_wrap_yield_from(value: Any):
     maybe_list = [Option(x) for x in range(10)]
 
@@ -57,11 +59,23 @@ def test_wrap_yield_from(value: Any):
         for x in maybe_list:
             y = yield from x
             assert isinstance(y, int)
-            assert y == x.default(undefined)
+            assert y == x.unwrap()
         return value
 
     maybe = f()
     assert isinstance(maybe, Option)
 
+    result = maybe.unwrap()
+    assert result == value
+
+
+@given(st.integers())
+def test_wrap_nested(value: Any):
+    @optional
+    def f() -> Any:
+        return Option(value)
+
+    maybe = f()
+    assert isinstance(maybe, Option)
     result = maybe.unwrap()
     assert result == value

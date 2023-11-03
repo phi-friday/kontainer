@@ -9,7 +9,7 @@ __all__ = ["undefined", "Undefined"]
 _UNDEFINED_COUNT = 0
 
 
-class Undefined:
+class Undefined:  # pragma: no cover
     def __init__(self) -> None:
         global _UNDEFINED_COUNT  # noqa: PLW0603
         if not _UNDEFINED_COUNT:
