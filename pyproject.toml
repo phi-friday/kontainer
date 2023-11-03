@@ -19,6 +19,7 @@ anyio = "^4.0.0"
 uvloop = "^0.19.0"
 trio = "^0.22.2"
 hypothesis = "^6.88.1"
+pytest-cov = "^4.1.0"
 
 [tool.ruff]
 line-length = 88
@@ -139,6 +140,20 @@ pythonVersion = '3.8'
 pythonPlatform = 'Linux'
 diagnostic = 'basic'
 include = ['src', 'tests']
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/kontainer --cov-report html --cov-report=xml"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = ["./tests/**/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
 
 [build-system]
 requires = ["poetry-core"]
