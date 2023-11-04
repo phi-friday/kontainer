@@ -27,6 +27,26 @@ class _Catch(Generic[ErrorT]):
     def __init__(self, error_type: type[ErrorT]) -> None:
         self._error_type = error_type
 
+    @overload
+    def __call__(
+        self, func: Callable[ParamT, Generator[Any, Any, Result[ValueT, ErrorT2]]]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
+
+    @overload
+    def __call__(
+        self, func: Callable[ParamT, Generator[Any, Any, ValueT]]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT]]: ...
+
+    @overload
+    def __call__(
+        self, func: Callable[ParamT, Result[ValueT, ErrorT2]]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
+
+    @overload
+    def __call__(
+        self, func: Callable[ParamT, ValueT]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT]]: ...
+
     def __call__(
         self,
         func: Callable[ParamT, Generator[Any, Any, Result[ValueT, ErrorT2]]]
@@ -57,11 +77,11 @@ def catch() -> _Catch[Exception]: ...
 
 
 @overload
-def catch(*, error_type: type[Exception]) -> _Catch[Exception]: ...
+def catch(*, error_type: type[ErrorT2]) -> _Catch[ErrorT2]: ...
 
 
 @overload
-def catch(*, error_type: type[ErrorT2]) -> _Catch[ErrorT2]: ...
+def catch(*, error_type: type[Exception]) -> _Catch[Exception]: ...
 
 
 @overload
@@ -117,6 +137,36 @@ def catch(
 def catch(
     func: Callable[ParamT, ValueT], /, *, error_type: type[ErrorT2]
 ) -> Callable[ParamT, Result[ValueT, ErrorT2]]: ...
+
+
+@overload
+def catch(
+    func: Callable[ParamT, Generator[Any, Any, Result[ValueT, ErrorT]]],
+    /,
+    *,
+    error_type: type[Exception],
+) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
+
+
+@overload
+def catch(
+    func: Callable[ParamT, Generator[Any, Any, ValueT]],
+    /,
+    *,
+    error_type: type[Exception],
+) -> Callable[ParamT, Result[ValueT, Exception]]: ...
+
+
+@overload
+def catch(
+    func: Callable[ParamT, Result[ValueT, ErrorT]], /, *, error_type: type[Exception]
+) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
+
+
+@overload
+def catch(
+    func: Callable[ParamT, ValueT], /, *, error_type: type[Exception]
+) -> Callable[ParamT, Result[ValueT, Exception]]: ...
 
 
 def catch(
