@@ -176,7 +176,7 @@ class BaseTestContainer:
     async def test_await(self, value: Any):
         current = sniffio.current_async_library()
         if current == "trio":
-            pytest.skip()
+            return
 
         container = self.container_type(value)
         result = await container
@@ -434,6 +434,66 @@ class BaseTestContainer:
         container = self.container_type(1)
         with pytest.raises(ValueError, match="does not have a other."):
             container.unwrap_other()
+
+    @given(
+        st.one_of(
+            st.integers(),
+            st.text(),
+            st.binary(),
+            st.tuples(st.integers()),
+            st.just(undefined),
+        ),
+        st.one_of(
+            st.integers(),
+            st.text(),
+            st.binary(),
+            st.tuples(st.integers()),
+            st.just(undefined),
+        ),
+    )
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_repr(self, value: Any, other: Any):
+        if value is undefined and other is undefined:
+            return
+
+        container = self.container_type(value, other)
+        name = self.container_type.__name__
+        text = repr(container)
+        if value is undefined:
+            assert text == f"<{name!s}: other={other!r}>"
+        elif other is undefined:
+            assert text == f"<{name!s}: value={value!r}>"
+        else:
+            assert text == f"<{name!s}: value={value!r}, other={other!r}>"
+
+    @given(
+        st.one_of(
+            st.integers(),
+            st.text(),
+            st.binary(),
+            st.tuples(st.integers()),
+            st.just(undefined),
+        ),
+        st.one_of(
+            st.integers(),
+            st.text(),
+            st.binary(),
+            st.tuples(st.integers()),
+            st.just(undefined),
+        ),
+    )
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_str(self, value: Any, other: Any):
+        if value is undefined and other is undefined:
+            return
+
+        container = self.container_type(value, other)
+        if value is undefined:
+            with pytest.raises(ValueError, match="does not have a value."):
+                str(container)
+            return
+
+        assert str(container) == str(value)
 
     def test_warn(self):
         for key in dir(self):

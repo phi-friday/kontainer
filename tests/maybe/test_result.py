@@ -5,6 +5,7 @@ from typing import Any, Callable
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+from typing_extensions import override
 
 from tests.maybe.base import BaseTestContainer
 
@@ -27,23 +28,28 @@ class TestResult(BaseTestContainer):
             st.integers(),
         ),
     )
+    @override
     def test_switch(self, value: Any, other: Any):
         return super().test_switch(value, other)
 
+    @override
     def test_default_other(self):
         container = self.container_type(1, Exception())
         with pytest.raises(NotImplementedError):
             container.default_other(1)
 
     @pytest.mark.skip()
+    @override
     def test_non_default_other(self): ...
 
+    @override
     def test_map_default_other(self):
         container = self.container_type(1)
         with pytest.raises(NotImplementedError):
             container.map_default_other(lambda: 1)
 
     @pytest.mark.skip()
+    @override
     def test_map_non_default_other(self, func: Callable[[], Any]): ...
 
     @given(
@@ -53,15 +59,18 @@ class TestResult(BaseTestContainer):
             st.integers(),
         )
     )
+    @override
     def test_unwrap_other(self, other: Exception):
         container = self.container_type(undefined, other)
         with pytest.raises(type(other)):
             container.unwrap_other()
 
     @pytest.mark.skip()
+    @override
     def test_unwrap_other_error(self): ...
 
     @given(st.integers())
+    @override
     def test_switch_non_error_value(self, value: Any):
         result = self.container_type(value, Exception())
         new = result.switch()
