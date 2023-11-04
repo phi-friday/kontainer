@@ -2243,22 +2243,28 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_iter_bind(
-        containers: Option[Any], /, *funcs: Callable[[Any], Option[Any]]
+        containers: Iterable[Option[Any]], /, *funcs: Callable[[Any], Option[Any]]
     ) -> Iterable[Option[Any]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Result[Any, Any], /, *funcs: Callable[[Any], Result[Any, Any]]
+        containers: Iterable[Result[Any, Any]],
+        /,
+        *funcs: Callable[[Any], Result[Any, Any]],
     ) -> Iterable[Result[Any, Any]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Maybe[Any, Any], /, *funcs: Callable[[Any], Maybe[Any, Any]]
+        containers: Iterable[Maybe[Any, Any]],
+        /,
+        *funcs: Callable[[Any], Maybe[Any, Any]],
     ) -> Iterable[Maybe[Any, Any]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Container[Any, Any], /, *funcs: Callable[[Any], Container[Any, Any]]
+        containers: Iterable[Container[Any, Any]],
+        /,
+        *funcs: Callable[[Any], Container[Any, Any]],
     ) -> Iterable[Container[Any, Any]]: ...
 
 ## Runtime
