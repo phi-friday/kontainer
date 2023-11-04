@@ -11,6 +11,8 @@ from kontainer.flow import (
     flowtools,
     map_elements,
     pipe_bind,
+    pipe_iter_bind,
+    pipe_iter_map,
     pipe_map,
 )
 from kontainer.maybe import Maybe, Option, Result
@@ -25,6 +27,8 @@ __all__ = [
     "catch",
     "pipe_bind",
     "pipe_map",
+    "pipe_iter_map",
+    "pipe_iter_bind",
     "map_elements",
     "bind_elements",
     "compose_funcs",
