@@ -10,15 +10,6 @@ from hypothesis import strategies as st
 from kontainer import Option, flowtools
 
 
-@given(st.lists(st.integers()))
-def test_flow_map(xs: list[int]):
-    mapper: Callable[[int], int] = lambda x: x + 1
-    ys = flowtools.map(xs, mapper)
-
-    assert isinstance(ys, Iterable)
-    assert list(ys) == [x + 1 for x in xs]
-
-
 @given(st.lists(st.tuples(st.integers(), st.integers())))
 def test_flow_starmap(xs: list[tuple[int, int]]):
     mapper: Callable[[int, int], int] = lambda x, y: x + y
@@ -152,3 +143,18 @@ def test_flow_infinite(xs: list[int]):
 
     expected = list(enumerate(xs))
     assert expected == list(ys)
+
+
+def test_flow_infinite_even():
+    ys = flowtools.take(flowtools.init_infinite(lambda x: x * 2), 5)
+
+    assert list(ys) == [0, 2, 4, 6, 8]
+
+
+@given(st.lists(st.integers(), min_size=1))
+def test_flow_tail(xs: list[int]):
+    ys = flowtools.tail(xs)
+    zs = list(ys)
+
+    assert len(xs) == len(zs) + 1
+    assert xs[1:] == zs

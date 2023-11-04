@@ -4,6 +4,7 @@ import warnings
 from typing import Any, Callable, ClassVar
 
 import pytest
+import sniffio
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
@@ -14,6 +15,12 @@ from kontainer.core.types import Container
 BOLD_RED = "\x1b[31;1m"
 RED = "\x1b[31;20m"
 RESET = "\x1b[0m"
+
+
+class _Const: ...
+
+
+const = _Const()
 
 
 def _func_as_value_container(
@@ -47,10 +54,59 @@ def _generate_getter(value: Any) -> Callable[[], Any]:
     return inner
 
 
-class _Const: ...
+def _add_one(x: int) -> int:
+    return x + 1
 
 
-const = _Const()
+def _add_suffix(x: str) -> str:
+    return x + "suffix"
+
+
+def _add_bsuffix(x: bytes) -> bytes:
+    return x + b"suffix"
+
+
+def _concat_tuples(x: tuple[Any, ...]) -> tuple[Any, ...]:
+    return (*x, 123)
+
+
+def _get_func(value: Any) -> Callable[[Any], Any]:
+    if isinstance(value, int):
+        return _add_one
+    if isinstance(value, str):
+        return _add_suffix
+    if isinstance(value, bytes):
+        return _add_bsuffix
+    if isinstance(value, tuple):
+        return _concat_tuples
+
+    raise NotImplementedError
+
+
+def _concat_values(x: Any, y: Any) -> tuple[Any, Any]:
+    return (x, y)
+
+
+@st.composite
+def value_func_result(draw: st.DrawFn):
+    value = draw(
+        st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers()))
+    )
+    func = _get_func(value)
+    result = func(value)
+    return (value, func, result)
+
+
+@st.composite
+def values_func_result(draw: st.DrawFn):
+    value = draw(
+        st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers()))
+    )
+    other = draw(
+        st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers()))
+    )
+    result = _concat_values(value, other)
+    return (value, other, _concat_values, result)
 
 
 class BaseTestContainer:
@@ -115,149 +171,86 @@ class BaseTestContainer:
         except StopIteration as exc:
             assert exc.value == value  # noqa: PT017
 
-    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
     @pytest.mark.anyio()
-    async def test_await(self, anyio_backend: Any, value: Any):
-        if anyio_backend == "trio" or (
-            isinstance(anyio_backend, tuple)
-            and anyio_backend
-            and anyio_backend[0] == "trio"
-        ):
+    @pytest.mark.parametrize("value", list(range(10)))
+    async def test_await(self, value: Any):
+        current = sniffio.current_async_library()
+        if current == "trio":
             pytest.skip()
+
         container = self.container_type(value)
         result = await container
         assert result == value
 
-    @pytest.mark.parametrize(
-        ("value", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_map_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_map_value(self, values: Any):
+        value, func, result = values
         container = self.container_type(value)
         new = container.map_value(func)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("value", "other", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_map_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_map_values(self, values: Any):
+        value, other, func, result = values
         container = self.container_type(value)
         new = container.map_values(other, func)
+        result = func(value, other)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("other", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_map_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_map_other(self, values: Any):
+        other, func, result = values
         container = self.container_type(undefined, other)
         new = container.map_other(func)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("other", "another", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_map_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_map_others(self, others: Any):
+        other, another, func, result = others
         container = self.container_type(undefined, other)
         new = container.map_others(another, func)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("value", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_alt_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_alt_value(self, values: Any):
+        value, func, result = values
         container = self.container_type(value)
         new = container.alt_value(func)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("value", "other", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_alt_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_alt_values(self, values: Any):
+        value, other, func, result = values
         container = self.container_type(value)
         new = container.alt_values(other, func)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("other", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_alt_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_alt_other(self, others: Any):
+        other, func, result = others
         container = self.container_type(undefined, other)
         new = container.alt_other(func)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("other", "another", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_alt_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_alt_others(self, others: Any):
+        other, another, func, result = others
         container = self.container_type(undefined, other)
         new = container.alt_others(another, func)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("value", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_bind_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_bind_value(self, values: Any):
+        value, func, result = values
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(value)
@@ -265,18 +258,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("value", "other", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_bind_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_bind_values(self, values: Any):
+        value, other, func, result = values
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(value)
@@ -284,16 +269,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("other", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_bind_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_bind_other(self, others: Any):
+        other, func, result = others
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
@@ -301,18 +280,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("other", "another", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_bind_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_bind_others(self, others: Any):
+        other, another, func, result = others
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
@@ -320,16 +291,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("value", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_lash_value(self, value: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_lash_value(self, values: Any):
+        value, func, result = values
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(value)
@@ -337,18 +302,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("value", "other", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_lash_values(
-        self, value: Any, other: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_lash_values(self, values: Any):
+        value, other, func, result = values
         func = _func_as_other_container(func, self.container_type)
 
         container = self.container_type(value)
@@ -356,16 +313,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._other == result
 
-    @pytest.mark.parametrize(
-        ("other", "func", "result"),
-        [
-            (1, lambda x: x + 1, 2),
-            ("text", lambda x: x + "suffix", "textsuffix"),
-            (b"text", lambda x: x + b"suffix", b"textsuffix"),
-            ((), lambda x: (*x, 123), (123,)),
-        ],
-    )
-    def test_lash_other(self, other: Any, func: Callable[[Any], Any], result: Any):
+    @given(value_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_lash_other(self, others: Any):
+        other, func, result = others
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
@@ -373,18 +324,10 @@ class BaseTestContainer:
         assert isinstance(new, self.container_type)
         assert new._value == result
 
-    @pytest.mark.parametrize(
-        ("other", "another", "func", "result"),
-        [
-            (1, 2, lambda x, y: x * y, 2),
-            ("text", "suffix", lambda x, y: x + y, "textsuffix"),
-            (b"text", b"suffix", lambda x, y: x + y, b"textsuffix"),
-            ((), (123,), lambda x, y: (*x, *y), (123,)),
-        ],
-    )
-    def test_lash_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
-    ):
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_lash_others(self, others: Any):
+        other, another, func, result = others
         func = _func_as_value_container(func, self.container_type)
 
         container = self.container_type(undefined, other)
@@ -416,14 +359,16 @@ class BaseTestContainer:
         assert default != value
         assert default == result
 
-    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    @given(st.builds(_generate_getter, st.integers()))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_map_default(self, func: Callable[[], Any]):
         container = self.container_type(undefined, Exception())
         result = func()
         default = container.map_default(func)
         assert default == result
 
-    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    @given(st.builds(_generate_getter, st.integers()))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_map_non_default(self, func: Callable[[], Any]):
         value = func()
         result = const
@@ -432,13 +377,15 @@ class BaseTestContainer:
         assert default != value
         assert default == result
 
-    @pytest.mark.parametrize("other", list(range(10)))
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_default_other(self, other: Any):
         container = self.container_type(const)
         default = container.default_other(other)
         assert default == other
 
-    @pytest.mark.parametrize("other", list(range(10)))
+    @given(st.integers())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_non_default_other(self, other: Any):
         result = const
         container = self.container_type(undefined, result)
@@ -446,14 +393,16 @@ class BaseTestContainer:
         assert default != other
         assert default == result
 
-    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    @given(st.builds(_generate_getter, st.integers()))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_map_default_other(self, func: Callable[[], Any]):
         container = self.container_type(const)
         result = func()
         default = container.map_default_other(func)
         assert default == result
 
-    @pytest.mark.parametrize("func", [_generate_getter(x) for x in range(10)])
+    @given(st.builds(_generate_getter, st.integers()))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_map_non_default_other(self, func: Callable[[], Any]):
         value = func()
         result = const
@@ -462,7 +411,8 @@ class BaseTestContainer:
         assert default != value
         assert default == result
 
-    @pytest.mark.parametrize("value", [1, "b", b"b", ()])
+    @given(st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers())))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_unwrap(self, value: Any):
         container = self.container_type(value)
         result = container.unwrap()
@@ -473,7 +423,8 @@ class BaseTestContainer:
         with pytest.raises(ValueError, match="does not have a value."):
             container.unwrap()
 
-    @pytest.mark.parametrize("other", [1, "b", b"b", ()])
+    @given(st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers())))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_unwrap_other(self, other: Any):
         container = self.container_type(undefined, other)
         result = container.unwrap_other()

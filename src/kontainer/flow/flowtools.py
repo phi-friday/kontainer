@@ -31,12 +31,8 @@ if TYPE_CHECKING:
 __all__ = [
     "append",
     "delay",
-    "filter",
     "fold",
-    "fold_back",
     "head",
-    "iter",
-    "map",
     "mapi",
     "scan",
     "skip",
@@ -100,26 +96,6 @@ def delay(generator: Callable[[], Iterable[SourceT]]) -> Iterable[SourceT]:
     return SeqGen(generator)
 
 
-def filter(  # noqa: A001
-    source: Iterable[SourceT], predicate: Callable[[SourceT], bool]
-) -> Iterable[SourceT]:
-    """Filter sequence.
-
-    Filters the sequence to a new sequence containing only the
-    elements of the sequence for which the given predicate returns
-    `True`.
-
-    Args:
-        source: (curried) The input sequence to to filter.
-        predicate: A function to test whether each item in the
-            input sequence should be included in the output.
-
-    Returns:
-        A partially applied filter function.
-    """
-    return builtins.filter(predicate, source)
-
-
 def fold(
     source: Iterable[SourceT],
     folder: Callable[[StateT, SourceT], StateT],
@@ -144,27 +120,6 @@ def fold(
         to each element of the sequence.
     """
     return functools.reduce(folder, source, state)
-
-
-def fold_back(
-    source: Iterable[SourceT], folder: Callable[[SourceT, StateT], StateT]
-) -> Callable[[StateT], StateT]:
-    """Fold elements in sequence backwards.
-
-    Applies a function to each element of the collection,
-    starting from the end, threading an accumulator argument through
-    the computation. If the input function is f and the elements are
-    i0...iN then computes f i0 (... (f iN s)...).
-
-    Args:
-        source: The input sequence to fold backwards.
-        folder: A function that updates the state with each element
-            from the sequence.
-
-    Returns:
-        Partially applied fold_back function.
-    """
-    return functools.partial(_fold_back, folder=folder, source=source)
 
 
 def head(source: Iterable[SourceT]) -> SourceT:
@@ -220,39 +175,6 @@ def init_infinite(
     if initializer is None:
         return Infinite(_self)
     return Infinite(initializer)
-
-
-def iter(source: Iterable[SourceT], action: Callable[[SourceT], None]) -> None:  # noqa: A001
-    """Applies the given function to each element of the collection.
-
-    Args:
-        source: The input sequence to iterate.
-        action: A function to apply to each element of the sequence.
-
-    Returns:
-        A partially applied iter function.
-    """
-    for x in source:
-        action(x)
-
-
-def map(  # noqa: A001
-    source: Iterable[SourceT], mapper: Callable[[SourceT], ResultT]
-) -> Iterable[ResultT]:
-    """Map source sequence.
-
-    Builds a new collection whose elements are the results of
-    applying the given function to each of the elements of the
-    collection.
-
-    Args:
-        source: The input sequence to map.
-        mapper: A function to transform items from the input sequence.
-
-    Returns:
-        Partially applied map function.
-    """
-    return SeqGen(functools.partial(_gen, source, mapper))
 
 
 @overload
@@ -459,10 +381,6 @@ def zip(  # noqa: A001
     return _zip
 
 
-def _star(x: Any, y: Any, func: Callable[[Any, Any], Any]) -> Any:
-    return func(x, y)
-
-
 def _starmap(
     args: Iterable[tuple[Any, ...]], func: Callable[[Unpack[tuple[Any, ...]]], Any]
 ) -> Iterable[Any]:
@@ -472,13 +390,6 @@ def _starmap(
 
 def _self(x: SourceT) -> SourceT:
     return x
-
-
-def _gen(
-    source: Iterable[SourceT], mapper: Callable[[SourceT], ResultT]
-) -> Generator[ResultT, Any, Any]:
-    for x in source:
-        yield mapper(x)
 
 
 def _append(
@@ -494,19 +405,3 @@ def _concat(*iterables: Iterable[SourceT]) -> Iterable[SourceT]:
 def _gen_concat(iterables: Iterable[Iterable[SourceT]]) -> Generator[SourceT, Any, Any]:
     for it in iterables:
         yield from it
-
-
-def _fold_back(
-    state: StateT,
-    folder: Callable[[SourceT, StateT], StateT],
-    source: Iterable[SourceT],
-) -> StateT:
-    """Partially applied fold_back function.
-
-    Returns:
-        The state object after the folding function is applied
-        to each element of the sequence.
-    """
-    return functools.reduce(
-        functools.partial(_star, func=folder), reversed(list(source)), state
-    )

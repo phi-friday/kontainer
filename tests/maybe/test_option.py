@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any, Callable
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from tests.maybe.base import BaseTestContainer
 
@@ -13,8 +15,9 @@ from kontainer.maybe import Option
 class TestOption(BaseTestContainer):
     container_type: type[Option] = Option
 
-    @pytest.mark.parametrize(
-        ("value", "other"), [(1, "b"), ("b", (1,)), (b"1", frozenset())]
+    @given(
+        st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers())),
+        st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers())),
     )
     def test_construct_with_other(self, value: Any, other: Any):
         container = self.container_type(value, other)
