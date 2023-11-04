@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generator, Generic, NoReturn, o
 from typing_extensions import ParamSpec, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
-from kontainer.core.exception import UndefinedError
+from kontainer.core.exception import KontainerValueError, UndefinedError
 from kontainer.core.types import Container
 from kontainer.utils.generator import create_generator
 
@@ -91,13 +91,13 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def _val(self) -> ValueT:
         if self._has_value():
             return self._value  # type: ignore
-        raise ValueError("does not have a value.")
+        raise KontainerValueError("does not have a value.")
 
     @property
     def _oth(self) -> OtherT:
         if self._has_other():
             return self._other  # type: ignore
-        raise ValueError("does not have a other.")
+        raise KontainerValueError("does not have a other.")
 
     @override
     def __repr__(self) -> str:

@@ -1,9 +1,28 @@
 from __future__ import annotations
 
-__all__ = ["UndefinedError", "UndefinedRecreateWarning"]
+__all__ = [
+    "KontainerError",
+    "KontainerWarning",
+    "UndefinedError",
+    "UndefinedRecreateWarning",
+    "KontainerValueError",
+    "KontainerTypeError",
+]
 
 
-class UndefinedError(Exception): ...
+class KontainerError(Exception): ...
 
 
-class UndefinedRecreateWarning(UserWarning): ...
+class KontainerWarning(UserWarning): ...
+
+
+class UndefinedError(KontainerError): ...
+
+
+class UndefinedRecreateWarning(KontainerWarning): ...
+
+
+class KontainerValueError(KontainerError, ValueError): ...
+
+
+class KontainerTypeError(KontainerError, TypeError): ...

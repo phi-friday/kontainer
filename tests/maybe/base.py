@@ -9,7 +9,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from kontainer.core.const import undefined
-from kontainer.core.exception import UndefinedError
+from kontainer.core.exception import KontainerValueError, UndefinedError
 from kontainer.core.types import Container
 
 BOLD_RED = "\x1b[31;1m"
@@ -420,7 +420,7 @@ class BaseTestContainer:
 
     def test_unwrap_error(self):
         container = self.container_type(undefined, 1)
-        with pytest.raises(ValueError, match="does not have a value."):
+        with pytest.raises(KontainerValueError):
             container.unwrap()
 
     @given(st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers())))
@@ -432,7 +432,7 @@ class BaseTestContainer:
 
     def test_unwrap_other_error(self):
         container = self.container_type(1)
-        with pytest.raises(ValueError, match="does not have a other."):
+        with pytest.raises(KontainerValueError):
             container.unwrap_other()
 
     @given(
@@ -489,7 +489,7 @@ class BaseTestContainer:
 
         container = self.container_type(value, other)
         if value is undefined:
-            with pytest.raises(ValueError, match="does not have a value."):
+            with pytest.raises(KontainerValueError):
                 str(container)
             return
 

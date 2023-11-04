@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, NoReturn, overload
 from typing_extensions import ParamSpec, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
+from kontainer.core.exception import KontainerTypeError
 from kontainer.maybe.maybe import Maybe
 
 ValueT = TypeVar("ValueT", infer_variance=True)
@@ -58,7 +59,9 @@ def _non_error_maybe_to_result(
             return Result(result._value)  # noqa: SLF001
         if isinstance(result._other, Exception):  # noqa: SLF001
             return Result(result._value, result._other)  # noqa: SLF001
-        raise TypeError("The type of value changed to other is not an error type.")
+        raise KontainerTypeError(
+            "The type of value changed to other is not an error type."
+        )
 
     return inner
 

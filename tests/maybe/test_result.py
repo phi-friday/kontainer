@@ -10,6 +10,7 @@ from typing_extensions import override
 from tests.maybe.base import BaseTestContainer
 
 from kontainer import undefined
+from kontainer.core.exception import KontainerTypeError
 from kontainer.maybe import Result
 
 
@@ -74,7 +75,5 @@ class TestResult(BaseTestContainer):
     def test_switch_non_error_value(self, value: Any):
         result = self.container_type(value, Exception())
         new = result.switch()
-        with pytest.raises(
-            TypeError, match="The type of value changed to other is not an error type."
-        ):
+        with pytest.raises(KontainerTypeError):
             new.unwrap_other()
