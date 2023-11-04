@@ -79,6 +79,11 @@ class Option(Maybe[ValueT, None], Generic[ValueT]):
         return super().__await__()
 
     @override
+    def __repr__(self) -> str:
+        name = type(self).__name__
+        return f"<{name!s}: value={self._val!r}>"
+
+    @override
     def map_value(self, func: Callable[[ValueT], AnotherT]) -> Option[AnotherT]:
         if not self._has_value() or self._val is None:
             return Option(undefined)
