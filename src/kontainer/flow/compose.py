@@ -22,6 +22,16 @@ if TYPE_CHECKING:
 __all__ = ["compose_funcs"]
 
 
+class _Compose:
+    __slots__ = ("_funcs",)
+
+    def __init__(self, funcs: tuple[Callable[[Any], Any], ...]) -> None:
+        self._funcs = funcs
+
+    def __call__(self, value: Any) -> Any:
+        return reduce(_run_func, self._funcs, value)
+
+
 @overload
 def compose_funcs() -> Callable[[ValueT], ValueT]: ...
 
@@ -160,10 +170,7 @@ def compose_funcs(*funcs: Callable[[Any], Any]) -> Callable[[Any], Any]: ...
 
 
 def compose_funcs(*funcs: Callable[[Any], Any]) -> Callable[[Any], Any]:
-    def new_func(value: Any) -> Any:
-        return reduce(_run_func, funcs, value)
-
-    return new_func
+    return _Compose(funcs)
 
 
 def _run_func(value: ValueT, func: Callable[[ValueT], ValueT0]) -> ValueT0:
