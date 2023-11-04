@@ -24,7 +24,7 @@ __all__ = ["catch"]
 
 
 class _Catch(Generic[ErrorT]):
-    __slot__ = ("_error_type",)
+    __slots__ = ("_error_type",)
 
     def __init__(self, error_type: type[ErrorT]) -> None:
         self._error_type = error_type
