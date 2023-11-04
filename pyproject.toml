@@ -21,6 +21,9 @@ trio = "^0.22.2"
 hypothesis = "^6.88.1"
 pytest-cov = "^4.1.0"
 
+[tool.poetry.group.notebook.dependencies]
+ipykernel = "^6.26.0"
+
 [tool.ruff]
 line-length = 88
 target-version = "py38"
