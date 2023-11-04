@@ -13,6 +13,15 @@ from kontainer.core.const import undefined
 from kontainer.maybe import Option
 
 
+def _error(x: Any) -> None:
+    raise ValueError(x)
+
+
+def _errors(x: Any, y: Any) -> None:
+    error_msg = f"{x}:{y}"
+    raise ValueError(error_msg)
+
+
 class TestOption(BaseTestContainer):
     container_type: type[Option] = Option
 
@@ -58,34 +67,6 @@ class TestOption(BaseTestContainer):
     # TODO: remove skip
     @pytest.mark.skip()
     @override
-    def test_alt_value(self, value: Any, func: Callable[[None], Any], result: Any): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_alt_values(
-        self,
-        value: Any,
-        other: Any,
-        func: Callable[[None, Any], Any] | Callable[[Any], Any],
-        result: Any,
-    ): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_alt_other(self, other: Any, func: Callable[[Any], Any], result: Any): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_alt_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
-    ): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
     def test_bind_other(
         self, other: Any, func: Callable[[None], Any] | Callable[[], Any], result: Any
     ): ...
@@ -99,36 +80,6 @@ class TestOption(BaseTestContainer):
         another: Any,
         func: Callable[[None, Any], Any] | Callable[[Any], Any],
         result: Any,
-    ): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_lash_value(
-        self, value: Any, func: Callable[[None], Any] | Callable[[], Any], result: Any
-    ): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_lash_values(
-        self,
-        value: Any,
-        other: Any,
-        func: Callable[[None, Any], Any] | Callable[[Any], Any],
-        result: Any,
-    ): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_lash_other(self, other: Any, func: Callable[[Any], Any], result: Any): ...
-
-    # TODO: remove skip
-    @pytest.mark.skip()
-    @override
-    def test_lash_others(
-        self, other: Any, another: Any, func: Callable[[Any, Any], Any], result: Any
     ): ...
 
     @override
@@ -231,3 +182,51 @@ class TestOption(BaseTestContainer):
             value = None
 
         assert text == f"<{name!s}: value={value!r}>"
+
+    @override
+    def test_map_value_error(self):
+        container = self.container_type(1)
+        with pytest.raises(ValueError, match="1"):
+            container.map_value(_error)
+
+    @override
+    def test_map_values_error(self):
+        container = self.container_type(1)
+        with pytest.raises(ValueError, match="1:2"):
+            container.map_values(2, _errors)
+
+    @pytest.mark.skip()
+    @override
+    def test_map_other_error(self): ...
+
+    # TODO: remove skip
+    @pytest.mark.skip()
+    def test_map_other_null_error(self): ...
+
+    # TODO: remove skip
+    @pytest.mark.skip()
+    def test_map_other_empty_error(self): ...
+
+    @pytest.mark.skip()
+    @override
+    def test_map_others_error(self): ...
+
+    # TODO: remove skip
+    @pytest.mark.skip()
+    def test_map_others_null_error(self): ...
+
+    # TODO: remove skip
+    @pytest.mark.skip()
+    def test_map_others_empty_error(self): ...
+
+    @override
+    def test_bind_value_error(self): ...
+
+    @override
+    def test_bind_values_error(self): ...
+
+    @override
+    def test_bind_other_error(self): ...
+
+    @override
+    def test_bind_others_error(self): ...

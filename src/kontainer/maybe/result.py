@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
+from inspect import isclass
 from typing import TYPE_CHECKING, Any, Callable, Generic, NoReturn, overload
 
 from typing_extensions import ParamSpec, TypeVar, override
@@ -109,6 +110,15 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
     def __new__(
         cls, value: ValueT2 | Undefined, other: ErrorT2 | Undefined = undefined
     ) -> Result[ValueT2, ErrorT2]:
+        if (
+            other is not undefined
+            and not isinstance(other, Exception)
+            and not (isclass(other) and issubclass(other, Exception))
+        ):
+            error_msg = (
+                f"{type(other).__name__!s}[{other!r}] is not undefind and error object"
+            )
+            raise TypeError(error_msg)
         return super().__new__(cls, value, other)  # type: ignore
 
     @_maybe_to_result
@@ -141,36 +151,6 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
 
     @_maybe_to_result
     @override
-    def alt_value(
-        self, func: Callable[[ValueT], OtherErrorT]
-    ) -> Maybe[ErrorT, OtherErrorT | Exception]:
-        return super().alt_value(func)
-
-    @_maybe_to_result
-    @override
-    def alt_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], OtherErrorT]
-    ) -> Maybe[ErrorT, OtherErrorT | Exception]:
-        return super().alt_values(value, func)
-
-    @_wrap_type_error
-    @_non_error_maybe_to_result
-    @override
-    def alt_other(
-        self, func: Callable[[ErrorT], AnotherT]
-    ) -> Maybe[AnotherT, ValueT | Exception]:
-        return super().alt_other(func)
-
-    @_wrap_type_error
-    @_non_error_maybe_to_result
-    @override
-    def alt_others(
-        self, other: ElementT, func: Callable[[ErrorT, ElementT], AnotherT]
-    ) -> Maybe[AnotherT, ValueT | Exception]:
-        return super().alt_others(other, func)
-
-    @_maybe_to_result
-    @override
     def bind_value(
         self, func: Callable[[ValueT], Result[AnotherT, OtherErrorT]]
     ) -> Maybe[AnotherT, ErrorT | OtherErrorT | Exception]:
@@ -200,40 +180,6 @@ class Result(Maybe[ValueT, ErrorT], Generic[ValueT, ErrorT]):
         func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
     ) -> Maybe[ValueT | AnotherT, OtherErrorT | Exception]:
         return super().bind_others(other, func)
-
-    @_maybe_to_result
-    @override
-    def lash_value(
-        self, func: Callable[[ValueT], Result[AnotherT, OtherErrorT]]
-    ) -> Maybe[ErrorT | AnotherT, OtherErrorT | Exception]:
-        return super().lash_value(func)
-
-    @_maybe_to_result
-    @override
-    def lash_values(
-        self,
-        value: ElementT,
-        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherErrorT]],
-    ) -> Maybe[ErrorT | AnotherT, OtherErrorT | Exception]:
-        return super().lash_values(value, func)
-
-    @_wrap_type_error
-    @_non_error_maybe_to_result
-    @override
-    def lash_other(
-        self, func: Callable[[ErrorT], Result[AnotherT, OtherErrorT]]
-    ) -> Maybe[AnotherT, ValueT | OtherErrorT | Exception]:
-        return super().lash_other(func)
-
-    @_wrap_type_error
-    @_non_error_maybe_to_result
-    @override
-    def lash_others(
-        self,
-        value: ElementT,
-        func: Callable[[ErrorT, ElementT], Result[AnotherT, OtherErrorT]],
-    ) -> Maybe[AnotherT, ValueT | OtherErrorT | Exception]:
-        return super().lash_others(value, func)
 
     @_wrap_type_error
     @_non_error_maybe_to_result

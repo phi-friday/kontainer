@@ -158,3 +158,51 @@ def test_flow_tail(xs: list[int]):
 
     assert len(xs) == len(zs) + 1
     assert xs[1:] == zs
+
+
+def test_curry_one():
+    @flowtools.curry
+    def add(a: int) -> int:
+        return a
+
+    assert add(3)() == 3
+
+
+def test_curry_two():
+    @flowtools.curry
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    assert add(3)(4) == 7
+
+
+def test_curry2_two():
+    @flowtools.curry2
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    assert add(3)(4)() == 7
+
+
+def test_curry2_three():
+    @flowtools.curry2
+    def add(a: int, b: int, c: int) -> int:
+        return a + b + c
+
+    assert add(3)(4)(5) == 12
+
+
+def test_curry3_three():
+    @flowtools.curry3
+    def add(a: int, b: int, c: int) -> int:
+        return a + b + c
+
+    assert add(3)(4)(5)() == 12
+
+
+def test_curry3_four():
+    @flowtools.curry3
+    def add(a: int, b: int, c: int, d: int) -> int:
+        return a + b + c + d
+
+    assert add(3)(4)(5)(6) == 18

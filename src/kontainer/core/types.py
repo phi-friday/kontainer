@@ -21,6 +21,12 @@ __all__ = ["Container"]
 
 
 class Container(ABC, Generic[ValueT, OtherT]):
+    r"""Container
+
+    map: (x, y) -> (X, y) or  (x, y) -> (x, Y)\
+    bind: (x, y) -> (X, Y)
+    """
+
     __slots__ = ("_value", "_other")
 
     def __init__(
@@ -100,90 +106,130 @@ class Container(ABC, Generic[ValueT, OtherT]):
     @abstractmethod
     def map_value(
         self, func: Callable[[ValueT], AnotherT]
-    ) -> Container[AnotherT, OtherT | Exception]: ...
+    ) -> Container[AnotherT, OtherT]:
+        """_summary_
+
+        value -> new value -> (new value, other)
+
+        Args:
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def map_values(
         self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
-    ) -> Container[AnotherT, OtherT | Exception]: ...
+    ) -> Container[AnotherT, OtherT]:
+        """_summary_
+
+        value, arg -> new value -> (new value, other)
+
+        Args:
+            value: _description_
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def map_other(
         self, func: Callable[[OtherT], AnotherT]
-    ) -> Container[ValueT, AnotherT | Exception]: ...
+    ) -> Container[ValueT, AnotherT]:
+        """_summary_
+
+        other -> new other -> (value, new other)
+
+        Args:
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def map_others(
         self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
-    ) -> Container[ValueT, AnotherT | Exception]: ...
+    ) -> Container[ValueT, AnotherT]:
+        """_summary_
 
-    @abstractmethod
-    def alt_value(
-        self, func: Callable[[ValueT], AnotherT]
-    ) -> Container[OtherT, AnotherT | Exception]: ...
+        other, arg -> new other -> (value, new other)
 
-    @abstractmethod
-    def alt_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
-    ) -> Container[OtherT, AnotherT | Exception]: ...
+        Args:
+            other: _description_
+            func: _description_
 
-    @abstractmethod
-    def alt_other(
-        self, func: Callable[[OtherT], AnotherT]
-    ) -> Container[AnotherT, ValueT | Exception]: ...
-
-    @abstractmethod
-    def alt_others(
-        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
-    ) -> Container[AnotherT, ValueT | Exception]: ...
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def bind_value(
         self, func: Callable[[ValueT], Container[AnotherT, AnotherT2]]
-    ) -> Container[AnotherT, OtherT | AnotherT2 | Exception]: ...
+    ) -> Container[AnotherT, AnotherT2]:
+        """_summary_
+
+        value -> new value, new other -> (new value, new other)
+
+        Args:
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def bind_values(
         self,
         value: ElementT,
         func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
-    ) -> Container[AnotherT, OtherT | AnotherT2 | Exception]: ...
+    ) -> Container[AnotherT, AnotherT2]:
+        """_summary_
+
+        value, arg -> new value, new other -> (new value, new other)
+
+        Args:
+            value: _description_
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def bind_other(
         self, func: Callable[[OtherT], Container[AnotherT, AnotherT2]]
-    ) -> Container[ValueT | AnotherT, AnotherT2 | Exception]: ...
+    ) -> Container[AnotherT, AnotherT2]:
+        """_summary_
+
+        other -> new value, new other -> (new value, new other)
+
+        Args:
+            func: _description_
+
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def bind_others(
         self,
         other: ElementT,
         func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
-    ) -> Container[ValueT | AnotherT, AnotherT2 | Exception]: ...
+    ) -> Container[AnotherT, AnotherT2]:
+        """_summary_
 
-    @abstractmethod
-    def lash_value(
-        self, func: Callable[[ValueT], Container[AnotherT, AnotherT2]]
-    ) -> Container[OtherT | AnotherT, AnotherT2 | Exception]: ...
+        other, arg -> new value, new other -> (new value, new other)
 
-    @abstractmethod
-    def lash_values(
-        self,
-        value: ElementT,
-        func: Callable[[ValueT, ElementT], Container[AnotherT, AnotherT2]],
-    ) -> Container[OtherT | AnotherT, AnotherT2 | Exception]: ...
+        Args:
+            other: _description_
+            func: _description_
 
-    @abstractmethod
-    def lash_other(
-        self, func: Callable[[OtherT], Container[AnotherT, AnotherT2]]
-    ) -> Container[AnotherT, ValueT | AnotherT2 | Exception]: ...
-
-    @abstractmethod
-    def lash_others(
-        self,
-        value: ElementT,
-        func: Callable[[OtherT, ElementT], Container[AnotherT, AnotherT2]],
-    ) -> Container[AnotherT, ValueT | AnotherT2 | Exception]: ...
+        Returns:
+            _description_
+        """
 
     @abstractmethod
     def switch(self) -> Container[OtherT, ValueT]: ...

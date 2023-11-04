@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from abc import ABC, abstractmethod
 from typing import Any, Callable, ClassVar
 
 import pytest
@@ -109,7 +110,7 @@ def values_func_result(draw: st.DrawFn):
     return (value, other, _concat_values, result)
 
 
-class BaseTestContainer:
+class BaseTestContainer(ABC):
     container_type: ClassVar[type[Container]]
 
     def test_container_type(self):
@@ -217,38 +218,6 @@ class BaseTestContainer:
 
     @given(value_func_result())
     @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_alt_value(self, values: Any):
-        value, func, result = values
-        container = self.container_type(value)
-        new = container.alt_value(func)
-        assert new._other == result
-
-    @given(values_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_alt_values(self, values: Any):
-        value, other, func, result = values
-        container = self.container_type(value)
-        new = container.alt_values(other, func)
-        assert new._other == result
-
-    @given(value_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_alt_other(self, others: Any):
-        other, func, result = others
-        container = self.container_type(undefined, other)
-        new = container.alt_other(func)
-        assert new._value == result
-
-    @given(values_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_alt_others(self, others: Any):
-        other, another, func, result = others
-        container = self.container_type(undefined, other)
-        new = container.alt_others(another, func)
-        assert new._value == result
-
-    @given(value_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_bind_value(self, values: Any):
         value, func, result = values
         func = _func_as_value_container(func, self.container_type)
@@ -290,50 +259,6 @@ class BaseTestContainer:
         new = container.bind_others(another, func)
         assert isinstance(new, self.container_type)
         assert new._other == result
-
-    @given(value_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_lash_value(self, values: Any):
-        value, func, result = values
-        func = _func_as_other_container(func, self.container_type)
-
-        container = self.container_type(value)
-        new = container.lash_value(func)
-        assert isinstance(new, self.container_type)
-        assert new._other == result
-
-    @given(values_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_lash_values(self, values: Any):
-        value, other, func, result = values
-        func = _func_as_other_container(func, self.container_type)
-
-        container = self.container_type(value)
-        new = container.lash_values(other, func)
-        assert isinstance(new, self.container_type)
-        assert new._other == result
-
-    @given(value_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_lash_other(self, others: Any):
-        other, func, result = others
-        func = _func_as_value_container(func, self.container_type)
-
-        container = self.container_type(undefined, other)
-        new = container.lash_other(func)
-        assert isinstance(new, self.container_type)
-        assert new._value == result
-
-    @given(values_func_result())
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_lash_others(self, others: Any):
-        other, another, func, result = others
-        func = _func_as_value_container(func, self.container_type)
-
-        container = self.container_type(undefined, other)
-        new = container.lash_others(another, func)
-        assert isinstance(new, self.container_type)
-        assert new._value == result
 
     @pytest.mark.parametrize(("value", "other"), [(1, 2), (1, "b"), (b"b", 11)])
     def test_switch(self, value: Any, other: Any):
@@ -419,7 +344,7 @@ class BaseTestContainer:
         assert result == value
 
     def test_unwrap_error(self):
-        container = self.container_type(undefined, 1)
+        container = self.container_type(undefined, Exception())
         with pytest.raises(KontainerValueError):
             container.unwrap()
 
@@ -488,12 +413,31 @@ class BaseTestContainer:
             return
 
         container = self.container_type(value, other)
-        if value is undefined:
-            with pytest.raises(KontainerValueError):
-                str(container)
-            return
-
         assert str(container) == str(value)
+
+    @abstractmethod
+    def test_map_value_error(self): ...
+
+    @abstractmethod
+    def test_map_values_error(self): ...
+
+    @abstractmethod
+    def test_map_other_error(self): ...
+
+    @abstractmethod
+    def test_map_others_error(self): ...
+
+    @abstractmethod
+    def test_bind_value_error(self): ...
+
+    @abstractmethod
+    def test_bind_values_error(self): ...
+
+    @abstractmethod
+    def test_bind_other_error(self): ...
+
+    @abstractmethod
+    def test_bind_others_error(self): ...
 
     def test_warn(self):
         for key in dir(self):

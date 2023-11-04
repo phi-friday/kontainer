@@ -15,7 +15,7 @@ from typing import (
     overload,
 )
 
-from typing_extensions import TypeVar, Unpack
+from typing_extensions import Concatenate, ParamSpec, TypeVar, Unpack
 
 SourceT = TypeVar("SourceT", infer_variance=True)
 if TYPE_CHECKING:
@@ -23,12 +23,16 @@ if TYPE_CHECKING:
 
     ResultT = TypeVar("ResultT", infer_variance=True)
     StateT = TypeVar("StateT", infer_variance=True)
+    ParamT = ParamSpec("ParamT")
     _T1 = TypeVar("_T1", infer_variance=True)
     _T2 = TypeVar("_T2", infer_variance=True)
     _T3 = TypeVar("_T3", infer_variance=True)
     _T4 = TypeVar("_T4", infer_variance=True)
 
 __all__ = [
+    "curry",
+    "curry2",
+    "curry3",
     "append",
     "delay",
     "fold",
@@ -41,6 +45,53 @@ __all__ = [
     "unfold",
     "zip",
 ]
+
+
+def curry(
+    func: Callable[Concatenate[_T1, ParamT], ResultT]
+) -> Callable[[_T1], Callable[ParamT, ResultT]]:
+    def outer(arg1: _T1, /) -> Callable[ParamT, ResultT]:
+        def inner(*args: ParamT.args, **kwargs: ParamT.kwargs) -> ResultT:
+            return func(arg1, *args, **kwargs)
+
+        return inner
+
+    return outer
+
+
+def curry2(
+    func: Callable[Concatenate[_T1, _T2, ParamT], ResultT]
+) -> Callable[[_T1], Callable[[_T2], Callable[ParamT, ResultT]]]:
+    def outer(arg1: _T1, /) -> Callable[[_T2], Callable[ParamT, ResultT]]:
+        def outer2(arg2: _T2, /) -> Callable[ParamT, ResultT]:
+            def inner(*args: ParamT.args, **kwargs: ParamT.kwargs) -> ResultT:
+                return func(arg1, arg2, *args, **kwargs)
+
+            return inner
+
+        return outer2
+
+    return outer
+
+
+def curry3(
+    func: Callable[Concatenate[_T1, _T2, _T3, ParamT], ResultT]
+) -> Callable[[_T1], Callable[[_T2], Callable[[_T3], Callable[ParamT, ResultT]]]]:
+    def outer(
+        arg1: _T1, /
+    ) -> Callable[[_T2], Callable[[_T3], Callable[ParamT, ResultT]]]:
+        def outer2(arg2: _T2, /) -> Callable[[_T3], Callable[ParamT, ResultT]]:
+            def outer3(arg3: _T3, /) -> Callable[ParamT, ResultT]:
+                def inner(*args: ParamT.args, **kwargs: ParamT.kwargs) -> ResultT:
+                    return func(arg1, arg2, arg3, *args, **kwargs)
+
+                return inner
+
+            return outer3
+
+        return outer2
+
+    return outer
 
 
 class SeqGen(Iterable[SourceT], Generic[SourceT]):

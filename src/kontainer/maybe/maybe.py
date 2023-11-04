@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, Generator, Generic, NoReturn, overload
 
 from typing_extensions import ParamSpec, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
-from kontainer.core.exception import KontainerValueError, UndefinedError
+from kontainer.core.exception import KontainerValueError
 from kontainer.core.types import Container
 from kontainer.utils.generator import create_generator
 
@@ -21,21 +20,6 @@ if TYPE_CHECKING:
     ParamT = ParamSpec("ParamT")
 
 __all__ = ["Maybe"]
-
-
-def _wrap_undefined_error(
-    func: Callable[ParamT, Maybe[ValueT, OtherT]]
-) -> Callable[ParamT, Maybe[ValueT, OtherT | Exception]]:
-    @wraps(func)
-    def inner(
-        *args: ParamT.args, **kwargs: ParamT.kwargs
-    ) -> Maybe[ValueT, OtherT | Exception]:
-        try:
-            return func(*args, **kwargs)
-        except UndefinedError as exc:
-            return Maybe(undefined, exc)
-
-    return inner
 
 
 class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
@@ -110,7 +94,7 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
 
     @override
     def __str__(self) -> str:
-        return str(self._val)
+        return str(self._value)
 
     @override
     def __eq__(self, other: object) -> bool:
@@ -136,277 +120,85 @@ class Maybe(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
             raise self._oth
         return create_generator(self._val)
 
-    @_wrap_undefined_error
     @override
-    def map_value(
-        self, func: Callable[[ValueT], AnotherT]
-    ) -> Maybe[AnotherT, OtherT | Exception]:
+    def map_value(self, func: Callable[[ValueT], AnotherT]) -> Maybe[AnotherT, OtherT]:
         if not self._has_value():
             return Maybe(undefined, self._other)
 
-        try:
-            result = func(self._val)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
+        result = func(self._val)
         return Maybe(result, self._other)
 
-    @_wrap_undefined_error
     @override
     def map_values(
         self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
-    ) -> Maybe[AnotherT, OtherT | Exception]:
+    ) -> Maybe[AnotherT, OtherT]:
         if not self._has_value():
             return Maybe(undefined, self._other)
 
-        try:
-            result = func(self._val, value)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
+        result = func(self._val, value)
         return Maybe(result, self._other)
 
-    @_wrap_undefined_error
     @override
-    def map_other(
-        self, func: Callable[[OtherT], AnotherT]
-    ) -> Maybe[ValueT, AnotherT | Exception]:
+    def map_other(self, func: Callable[[OtherT], AnotherT]) -> Maybe[ValueT, AnotherT]:
         if not self._has_other():
-            return Maybe(self._value)
+            return Maybe(self._value, undefined)
 
-        try:
-            result = func(self._oth)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(self._value, exc)
-
+        result = func(self._oth)
         return Maybe(self._value, result)
 
-    @_wrap_undefined_error
     @override
     def map_others(
         self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
-    ) -> Maybe[ValueT, AnotherT | Exception]:
+    ) -> Maybe[ValueT, AnotherT]:
         if not self._has_other():
-            return Maybe(self._value)
+            return Maybe(self._value, undefined)
 
-        try:
-            result = func(self._oth, other)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(self._value, exc)
-
+        result = func(self._oth, other)
         return Maybe(self._value, result)
 
-    @_wrap_undefined_error
-    @override
-    def alt_value(
-        self, func: Callable[[ValueT], AnotherT]
-    ) -> Maybe[OtherT, AnotherT | Exception]:
-        if not self._has_value():
-            return Maybe(self._other)
-
-        try:
-            result = func(self._val)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        return Maybe(self._other, result)
-
-    @_wrap_undefined_error
-    @override
-    def alt_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
-    ) -> Maybe[OtherT, AnotherT | Exception]:
-        if not self._has_value():
-            return Maybe(self._other)
-
-        try:
-            result = func(self._val, value)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        return Maybe(self._other, result)
-
-    @_wrap_undefined_error
-    @override
-    def alt_other(
-        self, func: Callable[[OtherT], AnotherT]
-    ) -> Maybe[AnotherT, ValueT | Exception]:
-        if not self._has_other():
-            return Maybe(undefined, self._value)
-
-        try:
-            result = func(self._oth)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        return Maybe(result, self._value)
-
-    @_wrap_undefined_error
-    @override
-    def alt_others(
-        self, other: ElementT, func: Callable[[OtherT, ElementT], AnotherT]
-    ) -> Maybe[AnotherT, ValueT | Exception]:
-        if not self._has_other():
-            return Maybe(undefined, self._value)
-
-        try:
-            result = func(self._oth, other)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        return Maybe(result, self._value)
-
-    @_wrap_undefined_error
     @override
     def bind_value(
         self, func: Callable[[ValueT], Maybe[AnotherT, AnotherT2]]
-    ) -> Maybe[AnotherT, OtherT | AnotherT2 | Exception]:
+    ) -> Maybe[AnotherT, OtherT | AnotherT2]:
         if not self._has_value():
             return Maybe(undefined, self._other)
 
-        try:
-            nested = self.map_value(func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
+        nested = Maybe(self._value, self._other).map_value(func)
+        return nested.unwrap()
 
-        return nested._val  # noqa: SLF001
-
-    @_wrap_undefined_error
     @override
     def bind_values(
         self,
         value: ElementT,
         func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
-    ) -> Maybe[AnotherT, OtherT | AnotherT2 | Exception]:
+    ) -> Maybe[AnotherT, OtherT | AnotherT2]:
         if not self._has_value():
             return Maybe(undefined, self._other)
 
-        try:
-            nested = self.map_values(value, func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
+        nested = Maybe(self._value, self._other).map_values(value, func)
+        return nested.unwrap()
 
-        return nested._val  # noqa: SLF001
-
-    @_wrap_undefined_error
     @override
     def bind_other(
         self, func: Callable[[OtherT], Maybe[AnotherT, AnotherT2]]
-    ) -> Maybe[ValueT | AnotherT, AnotherT2 | Exception]:
+    ) -> Maybe[ValueT | AnotherT, AnotherT2]:
         if not self._has_other():
             return Maybe(self._value, undefined)
 
-        try:
-            nested = self.map_other(func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
+        nested = Maybe(self._value, self._other).map_other(func)
+        return nested.unwrap_other()
 
-        result = nested._oth  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
-
-    @_wrap_undefined_error
     @override
     def bind_others(
         self,
         other: ElementT,
         func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
-    ) -> Maybe[ValueT | AnotherT, AnotherT2 | Exception]:
+    ) -> Maybe[ValueT | AnotherT, AnotherT2]:
         if not self._has_other():
             return Maybe(self._value, undefined)
 
-        try:
-            nested = self.map_others(other, func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        result = nested._oth  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
-
-    @_wrap_undefined_error
-    @override
-    def lash_value(
-        self, func: Callable[[ValueT], Maybe[AnotherT, AnotherT2]]
-    ) -> Maybe[OtherT | AnotherT, AnotherT2 | Exception]:
-        if not self._has_value():
-            return Maybe(self._other, undefined)
-
-        try:
-            nested = self.alt_value(func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        result = nested._oth  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
-
-    @_wrap_undefined_error
-    @override
-    def lash_values(
-        self,
-        value: ElementT,
-        func: Callable[[ValueT, ElementT], Maybe[AnotherT, AnotherT2]],
-    ) -> Maybe[OtherT | AnotherT, AnotherT2 | Exception]:
-        if not self._has_value():
-            return Maybe(self._other, undefined)
-
-        try:
-            nested = self.alt_values(value, func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        result = nested._oth  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
-
-    @_wrap_undefined_error
-    @override
-    def lash_other(
-        self, func: Callable[[OtherT], Maybe[AnotherT, AnotherT2]]
-    ) -> Maybe[AnotherT, ValueT | AnotherT2 | Exception]:
-        if not self._has_other():
-            return Maybe(undefined, self._value)
-
-        try:
-            nested = self.alt_other(func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        result = nested._val  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
-
-    @_wrap_undefined_error
-    @override
-    def lash_others(
-        self,
-        value: ElementT,
-        func: Callable[[OtherT, ElementT], Maybe[AnotherT, AnotherT2]],
-    ) -> Maybe[AnotherT, ValueT | AnotherT2 | Exception]:
-        if not self._has_other():
-            return Maybe(undefined, self._value)
-
-        try:
-            nested = self.alt_others(value, func)
-        except Exception as exc:  # noqa: BLE001
-            return Maybe(undefined, exc)
-
-        result = nested._val  # noqa: SLF001
-        if isinstance(result, Exception):
-            return Maybe(undefined, result)
-
-        return result
+        nested = Maybe(self._value, self._other).map_others(other, func)
+        return nested.unwrap_other()
 
     @override
     def switch(self) -> Maybe[OtherT, ValueT]:
