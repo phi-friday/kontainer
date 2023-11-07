@@ -15,6 +15,7 @@ from kontainer.flow import (
     pipe_iter_bind,
     pipe_iter_map,
     pipe_map,
+    toggle,
 )
 
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "bind_elements",
     "compose_funcs",
     "flip_func",
+    "toggle",
     "undefined",
     "__version__",
 ]
