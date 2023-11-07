@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generator, Generic, overload
 
 from typing_extensions import ParamSpec, TypeVar
 
-from kontainer.core.const import undefined
-from kontainer.maybe import Result
+from kontainer.container.result import Error, Result
 from kontainer.utils.generator import unwrap_generator
 
 ErrorT = TypeVar("ErrorT", infer_variance=True, bound=Exception)
@@ -66,9 +65,9 @@ class _Catch(Generic[ErrorT]):
                 if isinstance(result, Generator):
                     result = unwrap_generator(result)
             except self._error_type as exc:
-                return Result(undefined, exc)
+                return Error(exc)
             if isinstance(result, Result):
-                return Result(result._value, result._other)  # noqa: SLF001
+                return Result(result._value)  # noqa: SLF001
             return Result(result)
 
         return inner
@@ -195,9 +194,9 @@ def catch(
             if isinstance(result, Generator):
                 result = unwrap_generator(result)
         except error_type as exc:
-            return Result(undefined, exc)
+            return Error(exc)
         if isinstance(result, Result):
-            return Result(result._value, result._other)  # noqa: SLF001
+            return Result(result._value)  # noqa: SLF001
         return Result(result)
 
     return inner

@@ -7,7 +7,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from kontainer import Option, flowtools
+from kontainer import Maybe, flowtools
 
 
 @given(st.lists(st.tuples(st.integers(), st.integers())))
@@ -66,10 +66,10 @@ def test_seq_fold_pipe(xs: list[int], s: int):
 
 @given(st.integers(max_value=100))
 def test_flow_unfold(x: int):
-    def unfolder(state: int) -> Option[tuple[int, int]]:
+    def unfolder(state: int) -> Maybe[tuple[int, int]]:
         if state < x:
-            return Option((state, state + 1))
-        return Option(None)
+            return Maybe((state, state + 1))
+        return Maybe(None)
 
     result = flowtools.unfold(0, unfolder)
     assert list(result) == list(range(x))

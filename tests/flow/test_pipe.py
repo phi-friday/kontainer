@@ -5,19 +5,11 @@ from typing import Any, Callable
 from hypothesis import given
 from hypothesis import strategies as st
 
-from kontainer import (
-    Maybe,
-    Option,
-    Result,
-    pipe_bind,
-    pipe_iter_bind,
-    pipe_iter_map,
-    pipe_map,
-)
+from kontainer import Maybe, Result, pipe_bind, pipe_iter_bind, pipe_iter_map, pipe_map
 from kontainer.core.types import Container
 
 
-@given(st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.integers())
+@given(st.one_of(st.just(Maybe), st.just(Result)), st.integers())
 def test_pipe_map_id(container_type: type[Container], x: int):
     container = container_type(x)
     new = pipe_map(container)
@@ -25,7 +17,7 @@ def test_pipe_map_id(container_type: type[Container], x: int):
     assert value == x
 
 
-@given(st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.integers())
+@given(st.one_of(st.just(Maybe), st.just(Result)), st.integers())
 def test_pipe_map_fn(container_type: type[Container], x: int):
     container = container_type(x)
     new = pipe_map(container, lambda x: x + 1)
@@ -34,7 +26,7 @@ def test_pipe_map_fn(container_type: type[Container], x: int):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.integers(),
     st.integers(),
     st.integers(),
@@ -48,7 +40,7 @@ def test_pipe_map_fn_gn(container_type: type[Container], x: int, y: int, z: int)
     assert value == gn(fn(x))
 
 
-@given(st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.integers())
+@given(st.one_of(st.just(Maybe), st.just(Result)), st.integers())
 def test_pipe_bind_id(container_type: type[Container], x: int):
     container = container_type(x)
     new = pipe_bind(container)
@@ -56,7 +48,7 @@ def test_pipe_bind_id(container_type: type[Container], x: int):
     assert value == x
 
 
-@given(st.one_of(st.just(Maybe), st.just(Option), st.just(Result)), st.integers())
+@given(st.one_of(st.just(Maybe), st.just(Result)), st.integers())
 def test_pipe_bind_fn(container_type: type[Container], x: int):
     container = container_type(x)
     new = pipe_bind(container, lambda x: container_type(x + 1))
@@ -65,7 +57,7 @@ def test_pipe_bind_fn(container_type: type[Container], x: int):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.integers(),
     st.integers(),
     st.integers(),
@@ -80,7 +72,7 @@ def test_pipe_bind_fn_gn(container_type: type[Container], x: int, y: int, z: int
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
 )
 def test_pipe_iter_map_id(container_type: type[Container], xs: list[int]):
@@ -90,7 +82,7 @@ def test_pipe_iter_map_id(container_type: type[Container], xs: list[int]):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
 )
 def test_pipe_iter_map_fn(container_type: type[Container], xs: list[int]):
@@ -100,7 +92,7 @@ def test_pipe_iter_map_fn(container_type: type[Container], xs: list[int]):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
     st.integers(),
     st.integers(),
@@ -116,7 +108,7 @@ def test_pipe_iter_map_fn_gn(
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
 )
 def test_pipe_iter_bind_id(container_type: type[Container], xs: list[int]):
@@ -126,7 +118,7 @@ def test_pipe_iter_bind_id(container_type: type[Container], xs: list[int]):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
 )
 def test_pipe_iter_bind_fn(container_type: type[Container], xs: list[int]):
@@ -136,7 +128,7 @@ def test_pipe_iter_bind_fn(container_type: type[Container], xs: list[int]):
 
 
 @given(
-    st.one_of(st.just(Maybe), st.just(Option), st.just(Result)),
+    st.one_of(st.just(Maybe), st.just(Result)),
     st.lists(st.integers(), min_size=1, max_size=100),
     st.integers(),
     st.integers(),

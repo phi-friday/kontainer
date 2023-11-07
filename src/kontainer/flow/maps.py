@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
     from kontainer.core.types import Container
-    from kontainer.maybe import Maybe, Option, Result
+    from kontainer.container import Maybe, Result
 
     ValueT = TypeVar("ValueT", infer_variance=True)
     OtherT = TypeVar("OtherT", infer_variance=True)
@@ -17,38 +17,38 @@ __all__ = ["map_elements", "bind_elements"]
 
 @overload
 def map_elements(
-    values: Iterable[Option[ValueT]], func: Callable[[ValueT], OtherT], /
-) -> Iterable[Option[OtherT]]: ...
+    values: Iterable[Maybe[ValueT]], func: Callable[[ValueT], OtherT], /
+) -> Iterable[Maybe[OtherT]]: ...
 
 
 @overload
 def map_elements(
-    values: Iterable[Option[ValueT]],
+    values: Iterable[Maybe[ValueT]],
     func: Callable[[ValueT], OtherT],
     /,
     *,
     lazy: Literal[False] = ...,
-) -> tuple[Option[OtherT], ...]: ...
+) -> tuple[Maybe[OtherT], ...]: ...
 
 
 @overload
 def map_elements(
-    values: Iterable[Option[ValueT]],
+    values: Iterable[Maybe[ValueT]],
     func: Callable[[ValueT], OtherT],
     /,
     *,
     lazy: Literal[True],
-) -> Iterable[Option[OtherT]]: ...
+) -> Iterable[Maybe[OtherT]]: ...
 
 
 @overload
 def map_elements(
-    values: Iterable[Option[ValueT]],
+    values: Iterable[Maybe[ValueT]],
     func: Callable[[ValueT], OtherT],
     /,
     *,
     lazy: bool = ...,
-) -> Iterable[Option[OtherT]] | tuple[Option[OtherT], ...]: ...
+) -> Iterable[Maybe[OtherT]] | tuple[Maybe[OtherT], ...]: ...
 
 
 @overload
@@ -85,45 +85,6 @@ def map_elements(
     *,
     lazy: bool = ...,
 ) -> Iterable[Result[OtherT, Exception]] | tuple[Result[OtherT, Exception], ...]: ...
-
-
-@overload
-def map_elements(
-    values: Iterable[Maybe[ValueT, Any]], func: Callable[[ValueT], OtherT], /
-) -> Iterable[Maybe[OtherT, Any | Exception]]: ...
-
-
-@overload
-def map_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], OtherT],
-    /,
-    *,
-    lazy: Literal[False],
-) -> tuple[Maybe[OtherT, Any | Exception], ...]: ...
-
-
-@overload
-def map_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], OtherT],
-    /,
-    *,
-    lazy: Literal[True],
-) -> Iterable[Maybe[OtherT, Any | Exception]]: ...
-
-
-@overload
-def map_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], OtherT],
-    /,
-    *,
-    lazy: bool = ...,
-) -> (
-    Iterable[Maybe[OtherT, Any | Exception]]
-    | tuple[Maybe[OtherT, Any | Exception], ...]
-): ...
 
 
 @overload
@@ -177,38 +138,38 @@ def map_elements(
 
 @overload
 def bind_elements(
-    values: Iterable[Option[ValueT]], func: Callable[[ValueT], Option[OtherT]], /
-) -> Iterable[Option[OtherT]]: ...
+    values: Iterable[Maybe[ValueT]], func: Callable[[ValueT], Maybe[OtherT]], /
+) -> Iterable[Maybe[OtherT]]: ...
 
 
 @overload
 def bind_elements(
-    values: Iterable[Option[ValueT]],
-    func: Callable[[ValueT], Option[OtherT]],
+    values: Iterable[Maybe[ValueT]],
+    func: Callable[[ValueT], Maybe[OtherT]],
     /,
     *,
     lazy: Literal[False] = ...,
-) -> tuple[Option[OtherT], ...]: ...
+) -> tuple[Maybe[OtherT], ...]: ...
 
 
 @overload
 def bind_elements(
-    values: Iterable[Option[ValueT]],
-    func: Callable[[ValueT], Option[OtherT]],
+    values: Iterable[Maybe[ValueT]],
+    func: Callable[[ValueT], Maybe[OtherT]],
     /,
     *,
     lazy: Literal[True],
-) -> Iterable[Option[OtherT]]: ...
+) -> Iterable[Maybe[OtherT]]: ...
 
 
 @overload
 def bind_elements(
-    values: Iterable[Option[ValueT]],
-    func: Callable[[ValueT], Option[OtherT]],
+    values: Iterable[Maybe[ValueT]],
+    func: Callable[[ValueT], Maybe[OtherT]],
     /,
     *,
     lazy: bool = ...,
-) -> Iterable[Option[OtherT]] | tuple[Option[OtherT], ...]: ...
+) -> Iterable[Maybe[OtherT]] | tuple[Maybe[OtherT], ...]: ...
 
 
 @overload
@@ -247,47 +208,6 @@ def bind_elements(
     *,
     lazy: bool = ...,
 ) -> Iterable[Result[OtherT, Exception]] | tuple[Result[OtherT, Exception], ...]: ...
-
-
-@overload
-def bind_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], Maybe[OtherT, Any]],
-    /,
-) -> Iterable[Maybe[OtherT, Any | Exception]]: ...
-
-
-@overload
-def bind_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], Maybe[OtherT, Any]],
-    /,
-    *,
-    lazy: Literal[False],
-) -> tuple[Maybe[OtherT, Any | Exception], ...]: ...
-
-
-@overload
-def bind_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], Maybe[OtherT, Any]],
-    /,
-    *,
-    lazy: Literal[True],
-) -> Iterable[Maybe[OtherT, Any | Exception]]: ...
-
-
-@overload
-def bind_elements(
-    values: Iterable[Maybe[ValueT, Any]],
-    func: Callable[[ValueT], Maybe[OtherT, Any]],
-    /,
-    *,
-    lazy: bool = ...,
-) -> (
-    Iterable[Maybe[OtherT, Any | Exception]]
-    | tuple[Maybe[OtherT, Any | Exception], ...]
-): ...
 
 
 @overload

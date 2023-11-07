@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from kontainer.container import Maybe, Result
 from kontainer.core.const import undefined
-from kontainer.decorator import catch, optional, wrap
+from kontainer.decorator import catch, optional
 from kontainer.flow import (
     bind_elements,
     compose_funcs,
@@ -15,14 +16,11 @@ from kontainer.flow import (
     pipe_iter_map,
     pipe_map,
 )
-from kontainer.maybe import Maybe, Option, Result
 
 __all__ = [
     "flowtools",
     "Maybe",
-    "Option",
     "Result",
-    "wrap",
     "optional",
     "catch",
     "pipe_bind",

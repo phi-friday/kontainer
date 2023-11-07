@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
     from kontainer.core.types import Container
-    from kontainer.maybe import Maybe, Option, Result
+    from kontainer.container import Maybe, Result
 
     ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT0 = TypeVar("ValueT0", infer_variance=True)
@@ -24,54 +24,54 @@ if TYPE_CHECKING:
     ValueT10 = TypeVar("ValueT10", infer_variance=True)
 
     @overload
-    def pipe_map(container: Option[ValueT], /) -> Option[ValueT]: ...
+    def pipe_map(container: Maybe[ValueT], /) -> Maybe[ValueT]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT], func0: Callable[[ValueT], ValueT0], /
-    ) -> Option[ValueT0]: ...
+        container: Maybe[ValueT], func0: Callable[[ValueT], ValueT0], /
+    ) -> Maybe[ValueT0]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         /,
-    ) -> Option[ValueT1]: ...
+    ) -> Maybe[ValueT1]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         /,
-    ) -> Option[ValueT2]: ...
+    ) -> Maybe[ValueT2]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         func3: Callable[[ValueT2], ValueT3],
         /,
-    ) -> Option[ValueT3]: ...
+    ) -> Maybe[ValueT3]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         func3: Callable[[ValueT2], ValueT3],
         func4: Callable[[ValueT3], ValueT4],
         /,
-    ) -> Option[ValueT4]: ...
+    ) -> Maybe[ValueT4]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -79,11 +79,11 @@ if TYPE_CHECKING:
         func4: Callable[[ValueT3], ValueT4],
         func5: Callable[[ValueT4], ValueT5],
         /,
-    ) -> Option[ValueT5]: ...
+    ) -> Maybe[ValueT5]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -92,11 +92,11 @@ if TYPE_CHECKING:
         func5: Callable[[ValueT4], ValueT5],
         func6: Callable[[ValueT5], ValueT6],
         /,
-    ) -> Option[ValueT6]: ...
+    ) -> Maybe[ValueT6]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -106,11 +106,11 @@ if TYPE_CHECKING:
         func6: Callable[[ValueT5], ValueT6],
         func7: Callable[[ValueT6], ValueT7],
         /,
-    ) -> Option[ValueT7]: ...
+    ) -> Maybe[ValueT7]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -121,11 +121,11 @@ if TYPE_CHECKING:
         func7: Callable[[ValueT6], ValueT7],
         func8: Callable[[ValueT7], ValueT8],
         /,
-    ) -> Option[ValueT8]: ...
+    ) -> Maybe[ValueT8]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -137,11 +137,11 @@ if TYPE_CHECKING:
         func8: Callable[[ValueT7], ValueT8],
         func9: Callable[[ValueT8], ValueT9],
         /,
-    ) -> Option[ValueT9]: ...
+    ) -> Maybe[ValueT9]: ...
 
     @overload
     def pipe_map(
-        container: Option[ValueT],
+        container: Maybe[ValueT],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -154,7 +154,7 @@ if TYPE_CHECKING:
         func9: Callable[[ValueT8], ValueT9],
         func10: Callable[[ValueT9], ValueT10],
         /,
-    ) -> Option[ValueT10]: ...
+    ) -> Maybe[ValueT10]: ...
 
     @overload
     def pipe_map(container: Result[ValueT, Any], /) -> Result[ValueT, Any]: ...
@@ -288,139 +288,6 @@ if TYPE_CHECKING:
         func10: Callable[[ValueT9], ValueT10],
         /,
     ) -> Result[ValueT10, Any]: ...
-
-    @overload
-    def pipe_map(container: Maybe[ValueT, Any], /) -> Maybe[ValueT, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any], func0: Callable[[ValueT], ValueT0], /
-    ) -> Maybe[ValueT0, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        /,
-    ) -> Maybe[ValueT1, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        /,
-    ) -> Maybe[ValueT2, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        /,
-    ) -> Maybe[ValueT3, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        /,
-    ) -> Maybe[ValueT4, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        /,
-    ) -> Maybe[ValueT5, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        /,
-    ) -> Maybe[ValueT6, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        /,
-    ) -> Maybe[ValueT7, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        /,
-    ) -> Maybe[ValueT8, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        func9: Callable[[ValueT8], ValueT9],
-        /,
-    ) -> Maybe[ValueT9, Any]: ...
-
-    @overload
-    def pipe_map(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        func9: Callable[[ValueT8], ValueT9],
-        func10: Callable[[ValueT9], ValueT10],
-        /,
-    ) -> Maybe[ValueT10, Any]: ...
 
     @overload
     def pipe_map(container: Container[ValueT, Any], /) -> Container[ValueT, Any]: ...
@@ -557,8 +424,8 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_map(
-        container: Option[Any], /, *funcs: Callable[[Any], Any]
-    ) -> Option[Any]: ...
+        container: Maybe[Any], /, *funcs: Callable[[Any], Any]
+    ) -> Maybe[Any]: ...
 
     @overload
     def pipe_map(
@@ -567,146 +434,141 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_map(
-        container: Maybe[Any, Any], /, *funcs: Callable[[Any], Any]
-    ) -> Maybe[Any, Any]: ...
-
-    @overload
-    def pipe_map(
         container: Container[Any, Any], /, *funcs: Callable[[Any], Any]
     ) -> Container[Any, Any]: ...
 
     @overload
-    def pipe_bind(container: Option[ValueT], /) -> Option[ValueT]: ...
+    def pipe_bind(container: Maybe[ValueT], /) -> Maybe[ValueT]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT], func0: Callable[[ValueT], Option[ValueT0]], /
-    ) -> Option[ValueT0]: ...
+        container: Maybe[ValueT], func0: Callable[[ValueT], Maybe[ValueT0]], /
+    ) -> Maybe[ValueT0]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
         /,
-    ) -> Option[ValueT1]: ...
+    ) -> Maybe[ValueT1]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
         /,
-    ) -> Option[ValueT2]: ...
+    ) -> Maybe[ValueT2]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
         /,
-    ) -> Option[ValueT3]: ...
+    ) -> Maybe[ValueT3]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
         /,
-    ) -> Option[ValueT4]: ...
+    ) -> Maybe[ValueT4]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
         /,
-    ) -> Option[ValueT5]: ...
+    ) -> Maybe[ValueT5]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
         /,
-    ) -> Option[ValueT6]: ...
+    ) -> Maybe[ValueT6]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
         /,
-    ) -> Option[ValueT7]: ...
+    ) -> Maybe[ValueT7]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
         /,
-    ) -> Option[ValueT8]: ...
+    ) -> Maybe[ValueT8]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
-        func9: Callable[[ValueT8], Option[ValueT9]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
+        func9: Callable[[ValueT8], Maybe[ValueT9]],
         /,
-    ) -> Option[ValueT9]: ...
+    ) -> Maybe[ValueT9]: ...
 
     @overload
     def pipe_bind(
-        container: Option[ValueT],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
-        func9: Callable[[ValueT8], Option[ValueT9]],
-        func10: Callable[[ValueT9], Option[ValueT10]],
+        container: Maybe[ValueT],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
+        func9: Callable[[ValueT8], Maybe[ValueT9]],
+        func10: Callable[[ValueT9], Maybe[ValueT10]],
         /,
-    ) -> Option[ValueT10]: ...
+    ) -> Maybe[ValueT10]: ...
 
     @overload
     def pipe_bind(container: Result[ValueT, Any], /) -> Result[ValueT, Any]: ...
@@ -842,139 +704,6 @@ if TYPE_CHECKING:
         func10: Callable[[ValueT9], Result[ValueT10, Any]],
         /,
     ) -> Result[ValueT10, Any]: ...
-
-    @overload
-    def pipe_bind(container: Maybe[ValueT, Any], /) -> Maybe[ValueT, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any], func0: Callable[[ValueT], Maybe[ValueT0, Any]], /
-    ) -> Maybe[ValueT0, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        /,
-    ) -> Maybe[ValueT1, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        /,
-    ) -> Maybe[ValueT2, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        /,
-    ) -> Maybe[ValueT3, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        /,
-    ) -> Maybe[ValueT4, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        /,
-    ) -> Maybe[ValueT5, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        /,
-    ) -> Maybe[ValueT6, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        /,
-    ) -> Maybe[ValueT7, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        /,
-    ) -> Maybe[ValueT8, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        func9: Callable[[ValueT8], Maybe[ValueT9, Any]],
-        /,
-    ) -> Maybe[ValueT9, Any]: ...
-
-    @overload
-    def pipe_bind(
-        container: Maybe[ValueT, Any],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        func9: Callable[[ValueT8], Maybe[ValueT9, Any]],
-        func10: Callable[[ValueT9], Maybe[ValueT10, Any]],
-        /,
-    ) -> Maybe[ValueT10, Any]: ...
 
     @overload
     def pipe_bind(container: Container[ValueT, Any], /) -> Container[ValueT, Any]: ...
@@ -1113,8 +842,8 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_bind(
-        container: Option[Any], /, *funcs: Callable[[Any], Option[Any]]
-    ) -> Option[Any]: ...
+        container: Maybe[Any], /, *funcs: Callable[[Any], Maybe[Any]]
+    ) -> Maybe[Any]: ...
 
     @overload
     def pipe_bind(
@@ -1123,65 +852,60 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_bind(
-        container: Maybe[Any, Any], /, *funcs: Callable[[Any], Maybe[Any, Any]]
-    ) -> Maybe[Any, Any]: ...
-
-    @overload
-    def pipe_bind(
         container: Container[Any, Any], /, *funcs: Callable[[Any], Container[Any, Any]]
     ) -> Container[Any, Any]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]], /
-    ) -> Iterable[Option[ValueT]]: ...
+        containers: Iterable[Maybe[ValueT]], /
+    ) -> Iterable[Maybe[ValueT]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]], func0: Callable[[ValueT], ValueT0], /
-    ) -> Iterable[Option[ValueT0]]: ...
+        containers: Iterable[Maybe[ValueT]], func0: Callable[[ValueT], ValueT0], /
+    ) -> Iterable[Maybe[ValueT0]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         /,
-    ) -> Iterable[Option[ValueT1]]: ...
+    ) -> Iterable[Maybe[ValueT1]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         /,
-    ) -> Iterable[Option[ValueT2]]: ...
+    ) -> Iterable[Maybe[ValueT2]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         func3: Callable[[ValueT2], ValueT3],
         /,
-    ) -> Iterable[Option[ValueT3]]: ...
+    ) -> Iterable[Maybe[ValueT3]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
         func3: Callable[[ValueT2], ValueT3],
         func4: Callable[[ValueT3], ValueT4],
         /,
-    ) -> Iterable[Option[ValueT4]]: ...
+    ) -> Iterable[Maybe[ValueT4]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1189,11 +913,11 @@ if TYPE_CHECKING:
         func4: Callable[[ValueT3], ValueT4],
         func5: Callable[[ValueT4], ValueT5],
         /,
-    ) -> Iterable[Option[ValueT5]]: ...
+    ) -> Iterable[Maybe[ValueT5]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1202,11 +926,11 @@ if TYPE_CHECKING:
         func5: Callable[[ValueT4], ValueT5],
         func6: Callable[[ValueT5], ValueT6],
         /,
-    ) -> Iterable[Option[ValueT6]]: ...
+    ) -> Iterable[Maybe[ValueT6]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1216,11 +940,11 @@ if TYPE_CHECKING:
         func6: Callable[[ValueT5], ValueT6],
         func7: Callable[[ValueT6], ValueT7],
         /,
-    ) -> Iterable[Option[ValueT7]]: ...
+    ) -> Iterable[Maybe[ValueT7]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1231,11 +955,11 @@ if TYPE_CHECKING:
         func7: Callable[[ValueT6], ValueT7],
         func8: Callable[[ValueT7], ValueT8],
         /,
-    ) -> Iterable[Option[ValueT8]]: ...
+    ) -> Iterable[Maybe[ValueT8]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1247,11 +971,11 @@ if TYPE_CHECKING:
         func8: Callable[[ValueT7], ValueT8],
         func9: Callable[[ValueT8], ValueT9],
         /,
-    ) -> Iterable[Option[ValueT9]]: ...
+    ) -> Iterable[Maybe[ValueT9]]: ...
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[ValueT]],
+        containers: Iterable[Maybe[ValueT]],
         func0: Callable[[ValueT], ValueT0],
         func1: Callable[[ValueT0], ValueT1],
         func2: Callable[[ValueT1], ValueT2],
@@ -1264,7 +988,7 @@ if TYPE_CHECKING:
         func9: Callable[[ValueT8], ValueT9],
         func10: Callable[[ValueT9], ValueT10],
         /,
-    ) -> Iterable[Option[ValueT10]]: ...
+    ) -> Iterable[Maybe[ValueT10]]: ...
 
     @overload
     def pipe_iter_map(
@@ -1400,141 +1124,6 @@ if TYPE_CHECKING:
         func10: Callable[[ValueT9], ValueT10],
         /,
     ) -> Iterable[Result[ValueT10, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]], /
-    ) -> Iterable[Maybe[ValueT, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]], func0: Callable[[ValueT], ValueT0], /
-    ) -> Iterable[Maybe[ValueT0, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        /,
-    ) -> Iterable[Maybe[ValueT1, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        /,
-    ) -> Iterable[Maybe[ValueT2, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        /,
-    ) -> Iterable[Maybe[ValueT3, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        /,
-    ) -> Iterable[Maybe[ValueT4, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        /,
-    ) -> Iterable[Maybe[ValueT5, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        /,
-    ) -> Iterable[Maybe[ValueT6, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        /,
-    ) -> Iterable[Maybe[ValueT7, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        /,
-    ) -> Iterable[Maybe[ValueT8, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        func9: Callable[[ValueT8], ValueT9],
-        /,
-    ) -> Iterable[Maybe[ValueT9, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], ValueT0],
-        func1: Callable[[ValueT0], ValueT1],
-        func2: Callable[[ValueT1], ValueT2],
-        func3: Callable[[ValueT2], ValueT3],
-        func4: Callable[[ValueT3], ValueT4],
-        func5: Callable[[ValueT4], ValueT5],
-        func6: Callable[[ValueT5], ValueT6],
-        func7: Callable[[ValueT6], ValueT7],
-        func8: Callable[[ValueT7], ValueT8],
-        func9: Callable[[ValueT8], ValueT9],
-        func10: Callable[[ValueT9], ValueT10],
-        /,
-    ) -> Iterable[Maybe[ValueT10, Any]]: ...
 
     @overload
     def pipe_iter_map(
@@ -1675,8 +1264,8 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Option[Any]], /, *funcs: Callable[[Any], Any]
-    ) -> Iterable[Option[Any]]: ...
+        containers: Iterable[Maybe[Any]], /, *funcs: Callable[[Any], Any]
+    ) -> Iterable[Maybe[Any]]: ...
 
     @overload
     def pipe_iter_map(
@@ -1685,150 +1274,145 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_iter_map(
-        containers: Iterable[Maybe[Any, Any]], /, *funcs: Callable[[Any], Any]
-    ) -> Iterable[Maybe[Any, Any]]: ...
-
-    @overload
-    def pipe_iter_map(
         containers: Iterable[Container[Any, Any]], /, *funcs: Callable[[Any], Any]
     ) -> Iterable[Container[Any, Any]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]], /
-    ) -> Iterable[Option[ValueT]]: ...
+        containers: Iterable[Maybe[ValueT]], /
+    ) -> Iterable[Maybe[ValueT]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
         /,
-    ) -> Iterable[Option[ValueT0]]: ...
+    ) -> Iterable[Maybe[ValueT0]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
         /,
-    ) -> Iterable[Option[ValueT1]]: ...
+    ) -> Iterable[Maybe[ValueT1]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
         /,
-    ) -> Iterable[Option[ValueT2]]: ...
+    ) -> Iterable[Maybe[ValueT2]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
         /,
-    ) -> Iterable[Option[ValueT3]]: ...
+    ) -> Iterable[Maybe[ValueT3]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
         /,
-    ) -> Iterable[Option[ValueT4]]: ...
+    ) -> Iterable[Maybe[ValueT4]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
         /,
-    ) -> Iterable[Option[ValueT5]]: ...
+    ) -> Iterable[Maybe[ValueT5]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
         /,
-    ) -> Iterable[Option[ValueT6]]: ...
+    ) -> Iterable[Maybe[ValueT6]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
         /,
-    ) -> Iterable[Option[ValueT7]]: ...
+    ) -> Iterable[Maybe[ValueT7]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
         /,
-    ) -> Iterable[Option[ValueT8]]: ...
+    ) -> Iterable[Maybe[ValueT8]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
-        func9: Callable[[ValueT8], Option[ValueT9]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
+        func9: Callable[[ValueT8], Maybe[ValueT9]],
         /,
-    ) -> Iterable[Option[ValueT9]]: ...
+    ) -> Iterable[Maybe[ValueT9]]: ...
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[ValueT]],
-        func0: Callable[[ValueT], Option[ValueT0]],
-        func1: Callable[[ValueT0], Option[ValueT1]],
-        func2: Callable[[ValueT1], Option[ValueT2]],
-        func3: Callable[[ValueT2], Option[ValueT3]],
-        func4: Callable[[ValueT3], Option[ValueT4]],
-        func5: Callable[[ValueT4], Option[ValueT5]],
-        func6: Callable[[ValueT5], Option[ValueT6]],
-        func7: Callable[[ValueT6], Option[ValueT7]],
-        func8: Callable[[ValueT7], Option[ValueT8]],
-        func9: Callable[[ValueT8], Option[ValueT9]],
-        func10: Callable[[ValueT9], Option[ValueT10]],
+        containers: Iterable[Maybe[ValueT]],
+        func0: Callable[[ValueT], Maybe[ValueT0]],
+        func1: Callable[[ValueT0], Maybe[ValueT1]],
+        func2: Callable[[ValueT1], Maybe[ValueT2]],
+        func3: Callable[[ValueT2], Maybe[ValueT3]],
+        func4: Callable[[ValueT3], Maybe[ValueT4]],
+        func5: Callable[[ValueT4], Maybe[ValueT5]],
+        func6: Callable[[ValueT5], Maybe[ValueT6]],
+        func7: Callable[[ValueT6], Maybe[ValueT7]],
+        func8: Callable[[ValueT7], Maybe[ValueT8]],
+        func9: Callable[[ValueT8], Maybe[ValueT9]],
+        func10: Callable[[ValueT9], Maybe[ValueT10]],
         /,
-    ) -> Iterable[Option[ValueT10]]: ...
+    ) -> Iterable[Maybe[ValueT10]]: ...
 
     @overload
     def pipe_iter_bind(
@@ -1969,143 +1553,6 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]], /
-    ) -> Iterable[Maybe[ValueT, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT0, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT1, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT2, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT3, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT4, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT5, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT6, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT7, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT8, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        func9: Callable[[ValueT8], Maybe[ValueT9, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT9, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[ValueT, Any]],
-        func0: Callable[[ValueT], Maybe[ValueT0, Any]],
-        func1: Callable[[ValueT0], Maybe[ValueT1, Any]],
-        func2: Callable[[ValueT1], Maybe[ValueT2, Any]],
-        func3: Callable[[ValueT2], Maybe[ValueT3, Any]],
-        func4: Callable[[ValueT3], Maybe[ValueT4, Any]],
-        func5: Callable[[ValueT4], Maybe[ValueT5, Any]],
-        func6: Callable[[ValueT5], Maybe[ValueT6, Any]],
-        func7: Callable[[ValueT6], Maybe[ValueT7, Any]],
-        func8: Callable[[ValueT7], Maybe[ValueT8, Any]],
-        func9: Callable[[ValueT8], Maybe[ValueT9, Any]],
-        func10: Callable[[ValueT9], Maybe[ValueT10, Any]],
-        /,
-    ) -> Iterable[Maybe[ValueT10, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
         containers: Iterable[Container[ValueT, Any]], /
     ) -> Iterable[Container[ValueT, Any]]: ...
 
@@ -2243,8 +1690,8 @@ if TYPE_CHECKING:
 
     @overload
     def pipe_iter_bind(
-        containers: Iterable[Option[Any]], /, *funcs: Callable[[Any], Option[Any]]
-    ) -> Iterable[Option[Any]]: ...
+        containers: Iterable[Maybe[Any]], /, *funcs: Callable[[Any], Maybe[Any]]
+    ) -> Iterable[Maybe[Any]]: ...
 
     @overload
     def pipe_iter_bind(
@@ -2252,13 +1699,6 @@ if TYPE_CHECKING:
         /,
         *funcs: Callable[[Any], Result[Any, Any]],
     ) -> Iterable[Result[Any, Any]]: ...
-
-    @overload
-    def pipe_iter_bind(
-        containers: Iterable[Maybe[Any, Any]],
-        /,
-        *funcs: Callable[[Any], Maybe[Any, Any]],
-    ) -> Iterable[Maybe[Any, Any]]: ...
 
     @overload
     def pipe_iter_bind(
@@ -2271,44 +1711,32 @@ if TYPE_CHECKING:
 
 
 def pipe_map(
-    container: Option[ValueT]
-    | Result[ValueT, Any]
-    | Maybe[ValueT, Any]
-    | Container[ValueT, Any],
+    container: Maybe[ValueT] | Result[ValueT, Any] | Container[ValueT, Any],
     /,
     *funcs: Callable[[Any], Any],
-) -> Option[Any] | Result[Any, Any] | Maybe[Any, Any] | Container[Any, Any]:
+) -> Maybe[Any] | Result[Any, Any] | Container[Any, Any]:
     for func in funcs:
         container = container.map_value(func)
     return container
 
 
 def pipe_bind(
-    container: Option[ValueT]
-    | Result[ValueT, Any]
-    | Maybe[ValueT, Any]
-    | Container[ValueT, Any],
+    container: Maybe[ValueT] | Result[ValueT, Any] | Container[ValueT, Any],
     /,
     *funcs: Callable[[Any], Any],
-) -> Option[Any] | Result[Any, Any] | Maybe[Any, Any] | Container[Any, Any]:
+) -> Maybe[Any] | Result[Any, Any] | Container[Any, Any]:
     for func in funcs:
         container = container.bind_value(func)
     return container
 
 
 def pipe_iter_map(
-    containers: Iterable[Option[ValueT]]
+    containers: Iterable[Maybe[ValueT]]
     | Iterable[Result[ValueT, Any]]
-    | Iterable[Maybe[ValueT, Any]]
     | Iterable[Container[ValueT, Any]],
     /,
     *funcs: Callable[[Any], Any],
-) -> (
-    Iterable[Option[Any]]
-    | Iterable[Result[Any, Any]]
-    | Iterable[Maybe[Any, Any]]
-    | Iterable[Container[Any, Any]]
-):
+) -> Iterable[Maybe[Any]] | Iterable[Result[Any, Any]] | Iterable[Container[Any, Any]]:
     for container in containers:
         for func in funcs:
             container = container.map_value(func)  # noqa: PLW2901
@@ -2316,18 +1744,12 @@ def pipe_iter_map(
 
 
 def pipe_iter_bind(
-    containers: Iterable[Option[ValueT]]
+    containers: Iterable[Maybe[ValueT]]
     | Iterable[Result[ValueT, Any]]
-    | Iterable[Maybe[ValueT, Any]]
     | Iterable[Container[ValueT, Any]],
     /,
     *funcs: Callable[[Any], Any],
-) -> (
-    Iterable[Option[Any]]
-    | Iterable[Result[Any, Any]]
-    | Iterable[Maybe[Any, Any]]
-    | Iterable[Container[Any, Any]]
-):
+) -> Iterable[Maybe[Any]] | Iterable[Result[Any, Any]] | Iterable[Container[Any, Any]]:
     for container in containers:
         for func in funcs:
             container = container.bind_value(func)  # noqa: PLW2901

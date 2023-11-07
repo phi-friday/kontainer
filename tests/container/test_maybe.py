@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 from typing_extensions import override
 
-from tests.maybe.base import BaseTestContainer
+from tests.container.base import BaseTestContainer
 
-from kontainer.maybe import Maybe
+from kontainer.container import Maybe
 
 
 def _error(x: Any) -> None:
@@ -20,7 +20,7 @@ def _errors(x: Any, y: Any) -> None:
 
 
 class TestMaybe(BaseTestContainer):
-    container_type = Maybe
+    container_type: type[Maybe] = Maybe
 
     @override
     def test_map_value_error(self):
@@ -35,25 +35,7 @@ class TestMaybe(BaseTestContainer):
             container.map_values(2, _errors)
 
     @override
-    def test_map_other_error(self):
-        container = self.container_type(1, 3)
-        with pytest.raises(ValueError, match="3"):
-            container.map_other(_error)
-
-    @override
-    def test_map_others_error(self):
-        container = self.container_type(1, 3)
-        with pytest.raises(ValueError, match="3:2"):
-            container.map_others(2, _errors)
-
-    @override
     def test_bind_value_error(self): ...
 
     @override
     def test_bind_values_error(self): ...
-
-    @override
-    def test_bind_other_error(self): ...
-
-    @override
-    def test_bind_others_error(self): ...

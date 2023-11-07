@@ -6,13 +6,18 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from kontainer.decorator import wrap
-from kontainer.maybe import Maybe
+from kontainer import undefined
+from kontainer.container import Maybe
+from kontainer.decorator import optional
+
+arbitrary = st.one_of(
+    st.integers(), st.text(), st.binary(), st.tuples(st.integers()), st.none()
+)
 
 
-@given(st.integers())
+@given(arbitrary)
 def test_wrap_func(value: Any):
-    @wrap
+    @optional
     def f() -> Any:
         return value
 
@@ -22,9 +27,21 @@ def test_wrap_func(value: Any):
     assert result == value
 
 
-@given(st.integers())
+@pytest.mark.parametrize("null", [undefined, None])
+def test_wrap_null(null: Any):
+    @optional
+    def f() -> None:
+        return null
+
+    maybe = f()
+    assert isinstance(maybe, Maybe)
+    result = maybe.unwrap()
+    assert result is None
+
+
+@given(arbitrary)
 def test_wrap_generator(value: Any):
-    @wrap
+    @optional
     def f() -> Any:
         for _ in range(10):
             yield
@@ -37,11 +54,11 @@ def test_wrap_generator(value: Any):
     assert result == value
 
 
-@given(st.integers())
+@given(arbitrary)
 def test_wrap_yield_from(value: Any):
     maybe_list = [Maybe(x) for x in range(10)]
 
-    @wrap
+    @optional
     def f() -> Any:
         for x in maybe_list:
             y = yield from x
@@ -56,26 +73,9 @@ def test_wrap_yield_from(value: Any):
     assert result == value
 
 
-@given(st.integers())
-def test_wrap_error(value: Any):
-    @wrap
-    def f() -> Any:
-        raise Exception(value)  # noqa: TRY002
-
-    maybe = f()
-    assert isinstance(maybe, Maybe)
-
-    with pytest.raises(ValueError, match="does not have a value."):
-        maybe.unwrap()
-
-    other = maybe.unwrap_other()
-    assert isinstance(other, Exception)
-    assert other.args[0] == value
-
-
-@given(st.integers())
+@given(arbitrary)
 def test_wrap_nested(value: Any):
-    @wrap
+    @optional
     def f() -> Any:
         return Maybe(value)
 

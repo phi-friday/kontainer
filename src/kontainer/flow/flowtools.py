@@ -19,7 +19,7 @@ from typing_extensions import Concatenate, ParamSpec, TypeVar, Unpack
 
 SourceT = TypeVar("SourceT", infer_variance=True)
 if TYPE_CHECKING:
-    from kontainer import Option
+    from kontainer import Maybe
 
     ResultT = TypeVar("ResultT", infer_variance=True)
     StateT = TypeVar("StateT", infer_variance=True)
@@ -368,7 +368,7 @@ def take(source: Iterable[SourceT], count: int) -> Iterable[SourceT]:
 
 
 def unfold(
-    state: StateT, generator: Callable[[StateT], Option[tuple[SourceT, StateT]]]
+    state: StateT, generator: Callable[[StateT], Maybe[tuple[SourceT, StateT]]]
 ) -> Iterable[SourceT]:
     """Unfold sequence.
 
