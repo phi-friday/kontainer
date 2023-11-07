@@ -28,18 +28,23 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def __new__(cls, value: ErrorT) -> Result[Any, ErrorT]: ...
 
     @overload
+    def __new__(cls, value: type[ErrorT]) -> Result[Any, type[ErrorT]]: ...
+
+    @overload
     def __new__(cls, value: ValueT) -> Result[ValueT, Any]: ...
 
     @overload
     def __new__(
-        cls, value: ValueT | ErrorT
-    ) -> Result[ValueT, Any] | Result[Any, ErrorT]: ...
+        cls, value: ValueT | ErrorT | type[ErrorT]
+    ) -> Result[ValueT, Any] | Result[Any, ErrorT] | Result[Any, type[ErrorT]]: ...
 
     @override
     def __new__(
-        cls, value: ValueT | ErrorT
-    ) -> Result[ValueT, Any] | Result[Any, ErrorT]:
-        if isinstance(value, Exception):
+        cls, value: ValueT | ErrorT | type[ErrorT]
+    ) -> Result[ValueT, Any] | Result[Any, ErrorT] | Result[Any, type[ErrorT]]:
+        if isinstance(value, Exception) or (
+            isinstance(value, type) and issubclass(value, Exception)
+        ):
             return Error(value)
         return Done(value)
 
