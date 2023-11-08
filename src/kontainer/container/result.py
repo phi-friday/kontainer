@@ -56,7 +56,7 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         elif issubclass(container_type, Error):
             name = "Error"
         else:
-            name = "Maybe"
+            name = "Result"  # pragma: no cover
         return f"<{name}: value={self._value!r}>"
 
     @override
@@ -115,7 +115,7 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
 
     def unwrap_error(self) -> NoReturn:
         if not isinstance(self, Error):
-            raise KontainerValueError("Not an error container")
+            raise KontainerTypeError("Not an error container")
 
         if not isinstance(self._other, Exception):
             raise KontainerTypeError("error container does not hold an error")
@@ -176,7 +176,7 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
 
     @override
     def __init__(self, value: OtherT) -> None:
-        self._value = undefined if value is undefined else value
+        self._value = value if value is undefined else undefined
         self._other = value
 
     @overload

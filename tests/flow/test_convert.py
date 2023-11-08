@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
 from kontainer import Maybe, Result, toggle
 from kontainer.container.maybe import Null
 from kontainer.container.result import Error
+from kontainer.core.exception import KontainerTypeError
 
 
 @given(st.integers())
@@ -40,3 +42,10 @@ def test_null_to_error():
     result = toggle(null)
 
     assert isinstance(result, Error)
+
+
+def test_invalid_type_error():
+    value: Any = None
+
+    with pytest.raises(KontainerTypeError):
+        toggle(value)

@@ -44,7 +44,7 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
         elif issubclass(container_type, Null):
             name = "Null"
         else:
-            name = "Maybe"
+            name = "Maybe"  # pragma: no cover
         return f"<{name}: value={self._value!r}>"
 
     @override

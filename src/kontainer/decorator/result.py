@@ -66,6 +66,8 @@ class _Catch(Generic[ErrorT]):
                     result = unwrap_generator(result)
             except self._error_type as exc:
                 return Error(exc)
+            if isinstance(result, Error):
+                return Error(result._other)  # noqa: SLF001
             if isinstance(result, Result):
                 return Result(result._value)  # noqa: SLF001
             return Result(result)
@@ -195,6 +197,8 @@ def catch(
                 result = unwrap_generator(result)
         except error_type as exc:
             return Error(exc)
+        if isinstance(result, Error):
+            return Error(result._other)  # noqa: SLF001
         if isinstance(result, Result):
             return Result(result._value)  # noqa: SLF001
         return Result(result)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import warnings
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any, Callable, ClassVar
 
 import pytest
@@ -16,10 +15,13 @@ RED = "\x1b[31;20m"
 RESET = "\x1b[0m"
 
 
-class _Const: ...
+def _error(x: Any) -> None:
+    raise ValueError(x)
 
 
-const = _Const()
+def _errors(x: Any, y: Any) -> None:
+    error_msg = f"{x}:{y}"
+    raise ValueError(error_msg)
 
 
 def _func_as_container(
@@ -30,13 +32,6 @@ def _func_as_container(
         if isinstance(result, container_type):
             return result
         return container_type(result)
-
-    return inner
-
-
-def _generate_getter(value: Any) -> Callable[[], Any]:
-    def inner() -> Any:
-        return value
 
     return inner
 
@@ -202,38 +197,26 @@ class BaseTestContainer(ABC):
         result = container.unwrap()
         assert result == value
 
-    @abstractmethod
-    def test_map_value_error(self): ...
+    def test_map_value_error(self):
+        container = self.container_type(1)
+        with pytest.raises(ValueError, match="1"):
+            container.map_value(_error)
 
-    @abstractmethod
-    def test_map_values_error(self): ...
+    def test_map_values_error(self):
+        container = self.container_type(1)
+        with pytest.raises(ValueError, match="1:2"):
+            container.map_values(2, _errors)
 
-    @abstractmethod
-    def test_bind_value_error(self): ...
+    def test_bind_value_error(self):
+        container = self.container_type(1)
+        func = _func_as_container(_error, self.container_type)
 
-    @abstractmethod
-    def test_bind_values_error(self): ...
+        with pytest.raises(ValueError, match="1"):
+            container.bind_value(func)
 
-    def test_warn(self):
-        for key in dir(self):
-            if not key.startswith("test_"):
-                continue
+    def test_bind_values_error(self):
+        container = self.container_type(1)
+        func = _func_as_container(_errors, self.container_type)
 
-            method = getattr(self, key)
-            marks: list[pytest.Mark] | None = getattr(method, "pytestmark", None)
-
-            if not marks:
-                continue
-
-            for mark in marks:
-                if mark.name != "skip":
-                    continue
-                break
-            else:
-                continue
-
-            warnings.warn(
-                f"\n[{BOLD_RED}{self.container_type.__name__}{RESET}] The test method "
-                f"{RED}{key!r}{RESET} was skipped because it was undefined.",
-                stacklevel=1,
-            )
+        with pytest.raises(ValueError, match="1:2"):
+            container.map_values(2, func)
