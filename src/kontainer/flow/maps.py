@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, overload
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
-    from kontainer.core.types import Container
     from kontainer.container import Maybe, Result
+    from kontainer.core.types import Container
 
     ValueT = TypeVar("ValueT", infer_variance=True)
     OtherT = TypeVar("OtherT", infer_variance=True)

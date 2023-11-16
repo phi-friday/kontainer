@@ -7,8 +7,8 @@ __all__ = ["pipe_map", "pipe_bind", "pipe_iter_map", "pipe_iter_bind"]
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
-    from kontainer.core.types import Container
     from kontainer.container import Maybe, Result
+    from kontainer.core.types import Container
 
     ValueT = TypeVar("ValueT", infer_variance=True)
     ValueT0 = TypeVar("ValueT0", infer_variance=True)

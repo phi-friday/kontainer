@@ -1,4 +1,5 @@
 """https://raw.githubusercontent.com/dbrattli/Expression/main/tests/test_compose.py"""
+
 from __future__ import annotations
 
 from hypothesis import given

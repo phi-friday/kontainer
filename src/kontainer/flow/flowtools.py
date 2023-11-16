@@ -1,4 +1,5 @@
 """https://github.com/dbrattli/Expression/blob/main/expression/collections/seq.py"""
+
 from __future__ import annotations
 
 import builtins
