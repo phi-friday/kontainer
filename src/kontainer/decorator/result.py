@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generator, Generic, overload
 from typing_extensions import ParamSpec, TypeVar
 
 from kontainer.container.result import Error, Result
+from kontainer.core.exception import NestedError
 from kontainer.utils.generator import unwrap_generator
 
 ErrorT = TypeVar("ErrorT", infer_variance=True, bound=Exception)
@@ -64,8 +65,9 @@ class _Catch(Generic[ErrorT]):
                 result = func(*args, **kwargs)
                 if isinstance(result, Generator):
                     result = unwrap_generator(result)
-            except self._error_type as exc:
-                return Error(exc)
+            except self._error_type:
+                error = NestedError.catch()
+                return Error(error)
             if isinstance(result, Error):
                 return Error(result._other)  # noqa: SLF001
             if isinstance(result, Result):
@@ -195,8 +197,9 @@ def catch(
             result = func(*args, **kwargs)
             if isinstance(result, Generator):
                 result = unwrap_generator(result)
-        except error_type as exc:
-            return Error(exc)
+        except error_type:
+            error = NestedError.catch()
+            return Error(error)
         if isinstance(result, Error):
             return Error(result._other)  # noqa: SLF001
         if isinstance(result, Result):
