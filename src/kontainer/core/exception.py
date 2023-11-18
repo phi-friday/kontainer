@@ -58,8 +58,11 @@ class RemoteError(KontainerError):
 
 
 class NestedError(KontainerError):
-    def __init__(self, *args: object, remote: RemoteError) -> None:
-        super().__init__(*args)
+    def __init__(self, *args: object, remote: RemoteError, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._init(remote)
+
+    def _init(self, remote: RemoteError) -> None:
         self._remote = remote
         self._remote_type: type[BaseException] = RemoteError
         self._remote_args: tuple[Any, ...] = ()
@@ -112,12 +115,9 @@ class NestedError(KontainerError):
     @staticmethod
     def new(error_type: type[BaseException]) -> type[NestedError]:
         class _NestedError(NestedError, error_type):
-            def __init__(self, *args: object, remote: RemoteError) -> None:
-                super(error_type, self).__init__(*args)
-                self._remote = remote
-                self._remote_type: type[BaseException] = RemoteError
-                self._remote_args: tuple[Any, ...] = ()
-                self.__cause__ = remote
+            def __init__(self, *args: Any, remote: RemoteError, **kwargs: Any) -> None:
+                super(error_type, self).__init__(*args, **kwargs)
+                NestedError._init(self, remote)
 
         return _NestedError
 
