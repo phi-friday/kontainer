@@ -12,8 +12,7 @@ ValueT = TypeVar("ValueT", infer_variance=True)
 OtherT = TypeVar("OtherT", infer_variance=True)
 if TYPE_CHECKING:
     ErrorT = TypeVar("ErrorT", infer_variance=True, bound=Exception)
-    AnotherT1 = TypeVar("AnotherT1", infer_variance=True)
-    AnotherT2 = TypeVar("AnotherT2", infer_variance=True)
+    AnotherT = TypeVar("AnotherT", infer_variance=True)
     ElementT = TypeVar("ElementT", infer_variance=True)
 
 __all__ = ["Result"]
@@ -72,45 +71,41 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         return hash((Result, self._value))
 
     @override
-    def map_value(
-        self, func: Callable[[ValueT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+    def map_value(self, func: Callable[[ValueT], AnotherT]) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
     def map_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
     def map_container(
-        self,
-        value: Result[ElementT, Any],
-        func: Callable[[ValueT, ElementT], AnotherT1],
-    ) -> Result[AnotherT1, OtherT]:
+        self, value: Result[ElementT, Any], func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
     def bind_value(
-        self, func: Callable[[ValueT], Result[AnotherT1, OtherT]]
-    ) -> Result[AnotherT1, OtherT]:
+        self, func: Callable[[ValueT], Result[AnotherT, OtherT]]
+    ) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
     def bind_values(
         self,
         value: ElementT,
-        func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
-    ) -> Result[AnotherT1, OtherT]:
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
     def bind_container(
         self,
         value: Result[ElementT, Any],
-        func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
-    ) -> Result[AnotherT1, OtherT]:
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
         raise NotImplementedError
 
     @override
@@ -145,45 +140,41 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return super(Container, cls).__new__(cls)
 
     @override
-    def map_value(
-        self, func: Callable[[ValueT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+    def map_value(self, func: Callable[[ValueT], AnotherT]) -> Result[AnotherT, OtherT]:
         return Done(func(self._value))
 
     @override
     def map_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
         return Done(func(self._value, value))
 
     @override
     def map_container(
-        self,
-        value: Result[ElementT, Any],
-        func: Callable[[ValueT, ElementT], AnotherT1],
-    ) -> Result[AnotherT1, OtherT]:
+        self, value: Result[ElementT, Any], func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
         return value.bind_value(lambda x: self.map_values(x, func))
 
     @override
     def bind_value(
-        self, func: Callable[[ValueT], Result[AnotherT1, AnotherT2]]
-    ) -> Result[AnotherT1, AnotherT2]:
+        self, func: Callable[[ValueT], Result[AnotherT, OtherT]]
+    ) -> Result[AnotherT, OtherT]:
         return func(self._value)
 
     @override
     def bind_values(
         self,
         value: ElementT,
-        func: Callable[[ValueT, ElementT], Result[AnotherT1, AnotherT2]],
-    ) -> Result[AnotherT1, AnotherT2]:
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
         return func(self._value, value)
 
     @override
     def bind_container(
         self,
         value: Result[ElementT, Any],
-        func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
-    ) -> Result[AnotherT1, OtherT]:
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
         return value.bind_value(lambda x: self.bind_values(x, func))
 
     @override
@@ -229,41 +220,53 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return super(Container, cls).__new__(cls)
 
     @override
-    def map_value(
-        self, func: Callable[[ValueT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+    def map_value(self, func: Callable[[ValueT], AnotherT]) -> Result[AnotherT, OtherT]:
         return Error(self._other)
 
     @override
     def map_values(
-        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT1]
-    ) -> Result[AnotherT1, OtherT]:
+        self, value: ElementT, func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
+        return Error(self._other)
+
+    @override
+    def map_container(
+        self, value: Result[ElementT, Any], func: Callable[[ValueT, ElementT], AnotherT]
+    ) -> Result[AnotherT, OtherT]:
         return Error(self._other)
 
     @override
     def bind_value(
-        self, func: Callable[[ValueT], Result[AnotherT1, AnotherT2]]
-    ) -> Result[AnotherT1, AnotherT2]:
-        return Error(self._other)  # type: ignore
+        self, func: Callable[[ValueT], Result[AnotherT, OtherT]]
+    ) -> Result[AnotherT, OtherT]:
+        return Error(self._other)
 
     @override
     def bind_values(
         self,
         value: ElementT,
-        func: Callable[[ValueT, ElementT], Result[AnotherT1, AnotherT2]],
-    ) -> Result[AnotherT1, AnotherT2]:
-        return Error(self._other)  # type: ignore
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
+        return Error(self._other)
+
+    @override
+    def bind_container(
+        self,
+        value: Result[ElementT, Any],
+        func: Callable[[ValueT, ElementT], Result[AnotherT, OtherT]],
+    ) -> Result[AnotherT, OtherT]:
+        return Error(self._other)
 
     @override
     def switch(self) -> Result[OtherT, ValueT]:
         return Done(self._other)
 
     @override
-    def default(self, value: AnotherT1) -> AnotherT1:
+    def default(self, value: AnotherT) -> AnotherT:
         return value
 
     @override
-    def map_default(self, func: Callable[[], AnotherT1]) -> AnotherT1:
+    def map_default(self, func: Callable[[], AnotherT]) -> AnotherT:
         return func()
 
     @override
