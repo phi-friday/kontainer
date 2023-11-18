@@ -81,6 +81,24 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
         """
 
     @abstractmethod
+    def map_container(
+        self,
+        value: Container[ElementT, Any],
+        func: Callable[[ValueT, ElementT], AnotherT],
+    ) -> Container[AnotherT, OtherT]:
+        """_summary_
+
+        value, container -> new value -> (new value, other)
+
+        Args:
+            value: _description_
+            func: _description_
+
+        Returns:
+            _description_
+        """
+
+    @abstractmethod
     def bind_value(
         self, func: Callable[[ValueT], Container[AnotherT, OtherT]]
     ) -> Container[AnotherT, OtherT]:
@@ -104,6 +122,24 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
         """_summary_
 
         value, arg -> new value, new other -> (new value, new other)
+
+        Args:
+            value: _description_
+            func: _description_
+
+        Returns:
+            _description_
+        """
+
+    @abstractmethod
+    def bind_container(
+        self,
+        value: Container[ElementT, Any],
+        func: Callable[[ValueT, ElementT], Container[AnotherT, OtherT]],
+    ) -> Container[AnotherT, OtherT]:
+        """_summary_
+
+        value, container -> new value, new other -> (new value, new other)
 
         Args:
             value: _description_

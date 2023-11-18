@@ -168,6 +168,16 @@ class BaseTestContainer(ABC):
         result = func(value, other)
         assert new._value == result
 
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_map_container(self, values: Any):
+        value, other, func, result = values
+        container = self.container_type(value)
+        other_container = self.container_type(other)
+        new = container.map_container(other_container, func)
+        result = func(value, other)
+        assert new._value == result
+
     @given(value_func_result())
     @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_bind_value(self, values: Any):
@@ -190,6 +200,18 @@ class BaseTestContainer(ABC):
         assert isinstance(new, self.container_type)
         assert new._value == result
 
+    @given(values_func_result())
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_bind_container(self, values: Any):
+        value, other, func, result = values
+        func = _func_as_container(func, self.container_type)
+
+        container = self.container_type(value)
+        other_container = self.container_type(other)
+        new = container.bind_container(other_container, func)
+        assert isinstance(new, self.container_type)
+        assert new._value == result
+
     @given(arbitrary)
     @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_unwrap(self, value: Any):
@@ -207,6 +229,13 @@ class BaseTestContainer(ABC):
         with pytest.raises(ValueError, match="1:2"):
             container.map_values(2, _errors)
 
+    def test_map_container_non_container(self):
+        func: Callable[[int, int], int] = lambda x, y: x + y
+        container = self.container_type(1)
+        other: Any = 1
+        with pytest.raises(AttributeError):
+            container.map_container(other, func)
+
     def test_bind_value_error(self):
         container = self.container_type(1)
         func = _func_as_container(_error, self.container_type)
@@ -220,3 +249,12 @@ class BaseTestContainer(ABC):
 
         with pytest.raises(ValueError, match="1:2"):
             container.map_values(2, func)
+
+    def test_bind_container_non_container(self):
+        func: Callable[[int, int], Container[int, Any]] = (
+            lambda x, y: self.container_type(x + y)
+        )
+        container = self.container_type(1)
+        other: Any = 1
+        with pytest.raises(AttributeError):
+            container.bind_container(other, func)

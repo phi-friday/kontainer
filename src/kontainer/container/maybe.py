@@ -70,12 +70,24 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
         raise NotImplementedError
 
     @override
+    def map_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], OtherT]
+    ) -> Maybe[OtherT]:
+        raise NotImplementedError
+
+    @override
     def bind_value(self, func: Callable[[ValueT], Maybe[OtherT]]) -> Maybe[OtherT]:
         raise NotImplementedError
 
     @override
     def bind_values(
         self, value: ElementT, func: Callable[[ValueT, ElementT], Maybe[OtherT]]
+    ) -> Maybe[OtherT]:
+        raise NotImplementedError
+
+    @override
+    def bind_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], Maybe[OtherT]]
     ) -> Maybe[OtherT]:
         raise NotImplementedError
 
@@ -114,6 +126,12 @@ class Some(Maybe[ValueT], Generic[ValueT]):
         return Some(func(self._value, value))
 
     @override
+    def map_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], OtherT]
+    ) -> Maybe[OtherT]:
+        return value.bind_value(lambda x: self.map_values(x, func))
+
+    @override
     def bind_value(self, func: Callable[[ValueT], Maybe[OtherT]]) -> Maybe[OtherT]:
         return func(self._value)
 
@@ -122,6 +140,12 @@ class Some(Maybe[ValueT], Generic[ValueT]):
         self, value: ElementT, func: Callable[[ValueT, ElementT], Maybe[OtherT]]
     ) -> Maybe[OtherT]:
         return func(self._value, value)
+
+    @override
+    def bind_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], Maybe[OtherT]]
+    ) -> Maybe[OtherT]:
+        return value.bind_value(lambda x: self.bind_values(x, func))
 
     @override
     def switch(self) -> Maybe[None]:
@@ -162,12 +186,24 @@ class Null(Maybe[ValueT], Generic[ValueT]):
         return Null(None)
 
     @override
+    def map_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], OtherT]
+    ) -> Maybe[OtherT]:
+        return Null(None)
+
+    @override
     def bind_value(self, func: Callable[[ValueT], Maybe[OtherT]]) -> Maybe[OtherT]:
         return Null(None)
 
     @override
     def bind_values(
         self, value: ElementT, func: Callable[[ValueT, ElementT], Maybe[OtherT]]
+    ) -> Maybe[OtherT]:
+        return Null(None)
+
+    @override
+    def bind_container(
+        self, value: Maybe[ElementT], func: Callable[[ValueT, ElementT], Maybe[OtherT]]
     ) -> Maybe[OtherT]:
         return Null(None)
 

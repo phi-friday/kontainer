@@ -84,6 +84,14 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         raise NotImplementedError
 
     @override
+    def map_container(
+        self,
+        value: Result[ElementT, Any],
+        func: Callable[[ValueT, ElementT], AnotherT1],
+    ) -> Result[AnotherT1, OtherT]:
+        raise NotImplementedError
+
+    @override
     def bind_value(
         self, func: Callable[[ValueT], Result[AnotherT1, OtherT]]
     ) -> Result[AnotherT1, OtherT]:
@@ -93,6 +101,14 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def bind_values(
         self,
         value: ElementT,
+        func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
+    ) -> Result[AnotherT1, OtherT]:
+        raise NotImplementedError
+
+    @override
+    def bind_container(
+        self,
+        value: Result[ElementT, Any],
         func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
     ) -> Result[AnotherT1, OtherT]:
         raise NotImplementedError
@@ -141,6 +157,14 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return Done(func(self._value, value))
 
     @override
+    def map_container(
+        self,
+        value: Result[ElementT, Any],
+        func: Callable[[ValueT, ElementT], AnotherT1],
+    ) -> Result[AnotherT1, OtherT]:
+        return value.bind_value(lambda x: self.map_values(x, func))
+
+    @override
     def bind_value(
         self, func: Callable[[ValueT], Result[AnotherT1, AnotherT2]]
     ) -> Result[AnotherT1, AnotherT2]:
@@ -153,6 +177,14 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         func: Callable[[ValueT, ElementT], Result[AnotherT1, AnotherT2]],
     ) -> Result[AnotherT1, AnotherT2]:
         return func(self._value, value)
+
+    @override
+    def bind_container(
+        self,
+        value: Result[ElementT, Any],
+        func: Callable[[ValueT, ElementT], Result[AnotherT1, OtherT]],
+    ) -> Result[AnotherT1, OtherT]:
+        return value.bind_value(lambda x: self.bind_values(x, func))
 
     @override
     def switch(self) -> Result[OtherT, ValueT]:
