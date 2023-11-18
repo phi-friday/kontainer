@@ -328,12 +328,10 @@ def skip(source: Iterable[SourceT], count: int) -> Iterable[SourceT]:
         count: The number of items to skip.
     """
 
-    def gen() -> Generator[SourceT, Any, Any]:
-        for i, n in enumerate(source):
-            if i >= count:
-                yield n
+    if count <= 0:
+        return source
 
-    return SeqGen(gen)
+    return SeqGen(functools.partial(_gen_skip, source, count))
 
 
 def tail(source: Iterable[SourceT]) -> Iterable[SourceT]:
@@ -356,16 +354,10 @@ def take(source: Iterable[SourceT], count: int) -> Iterable[SourceT]:
         The result sequence.
     """
 
-    def gen() -> Generator[SourceT, Any, Any]:
-        for i, n in enumerate(source):
-            yield n
+    if count <= 0:
+        return ()
 
-            if i == count - 1:
-                break
-
-    if count > 0:
-        return SeqGen(gen)
-    return ()
+    return SeqGen(functools.partial(_gen_take, source, count))
 
 
 def unfold(
@@ -414,23 +406,7 @@ def zip(  # noqa: A001
         Partially applied zip function.
     """
 
-    def _zip(source2: Iterable[ResultT]) -> Iterable[tuple[SourceT, ResultT]]:
-        """Curried function.
-
-        Combines the two sequences into a list of pairs. The two
-        sequences need not have equal lengths: when one sequence is
-        exhausted any remaining elements in the other sequence are
-        ignored.
-
-        Args:
-            source2: The second input sequence.
-
-        Returns:
-            The result sequence.
-        """
-        return builtins.zip(source1, source2)
-
-    return _zip
+    return functools.partial(_zip, source1)
 
 
 def _starmap(
@@ -457,3 +433,23 @@ def _concat(*iterables: Iterable[SourceT]) -> Iterable[SourceT]:
 def _gen_concat(iterables: Iterable[Iterable[SourceT]]) -> Generator[SourceT, Any, Any]:
     for it in iterables:
         yield from it
+
+
+def _gen_skip(source: Iterable[SourceT], count: int) -> Generator[SourceT, Any, Any]:
+    for i, n in enumerate(source):
+        if i >= count:
+            yield n
+
+
+def _gen_take(source: Iterable[SourceT], count: int) -> Generator[SourceT, Any, Any]:
+    for i, n in enumerate(source):
+        yield n
+
+        if i == count - 1:
+            break
+
+
+def _zip(
+    source1: Iterable[SourceT], source2: Iterable[ResultT]
+) -> Iterable[tuple[SourceT, ResultT]]:
+    return builtins.zip(source1, source2)
