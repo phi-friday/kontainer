@@ -73,7 +73,7 @@ def test_wrap_error(value: Any):
     maybe = f()
     assert isinstance(maybe, Error)
 
-    with pytest.raises(ValueError, match="does not have a value."):
+    with pytest.raises(Exception, match=re.escape(str(value))):
         maybe.unwrap()
 
     with pytest.raises(Exception, match=re.escape(str(value))):
