@@ -45,6 +45,11 @@ __all__ = [
     "take",
     "unfold",
     "zip",
+    "identity",
+    "first",
+    "second",
+    "third",
+    "fourth",
 ]
 
 
@@ -407,6 +412,26 @@ def zip(  # noqa: A001
     """
 
     return functools.partial(_zip, source1)
+
+
+def identity(value: SourceT) -> SourceT:
+    return value
+
+
+def first(values: tuple[SourceT, Unpack[tuple[Any, ...]]]) -> SourceT:
+    return values[0]
+
+
+def second(values: tuple[Any, SourceT, Unpack[tuple[Any, ...]]]) -> SourceT:
+    return values[1]
+
+
+def third(values: tuple[Any, Any, SourceT, Unpack[tuple[Any, ...]]]) -> SourceT:
+    return values[2]
+
+
+def fourth(values: tuple[Any, Any, Any, SourceT, Unpack[tuple[Any, ...]]]) -> SourceT:
+    return values[3]
 
 
 def _starmap(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import accumulate
-from typing import Callable, Iterable
+from typing import Any, Callable, Iterable
 
 import pytest
 from hypothesis import given
@@ -206,3 +206,37 @@ def test_curry3_four():
         return a + b + c + d
 
     assert add(3)(4)(5)(6) == 18
+
+
+@given(st.integers())
+def test_identity(value: Any):
+    select = flowtools.identity(value)
+    assert select == value
+
+
+@given(st.lists(st.integers(), min_size=1))
+def test_first(values: list[Any]):
+    value = tuple(values)
+    select = flowtools.first(value)
+    assert select == values[0]
+
+
+@given(st.lists(st.integers(), min_size=2))
+def test_second(values: list[Any]):
+    value = tuple(values)
+    select = flowtools.second(value)
+    assert select == values[1]
+
+
+@given(st.lists(st.integers(), min_size=3))
+def test_third(values: tuple[Any, ...]):
+    value = tuple(values)
+    select = flowtools.third(value)
+    assert select == values[2]
+
+
+@given(st.lists(st.integers(), min_size=4))
+def test_fourth(values: tuple[Any, ...]):
+    value = tuple(values)
+    select = flowtools.fourth(value)
+    assert select == values[3]
