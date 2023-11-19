@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, NoReturn, overload
 from typing_extensions import Self, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
-from kontainer.core.exception import KontainerTypeError, KontainerValueError
+from kontainer.core.exception import KontainerTypeError
 from kontainer.core.types import Container
 
 ValueT = TypeVar("ValueT", infer_variance=True)
@@ -271,4 +271,4 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
 
     @override
     def unwrap(self) -> NoReturn:
-        raise KontainerValueError("does not have a value.")
+        self.unwrap_error()

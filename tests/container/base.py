@@ -140,6 +140,18 @@ class BaseTestContainer(ABC):
         except StopIteration as exc:
             assert exc.value == value  # noqa: PT017
 
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_iter_error(self, value: Any):
+        container = self.container_type(value)
+        iter_container = iter(container)
+
+        try:
+            while True:
+                next(iter_container)
+        except StopIteration as exc:
+            assert exc.value == value  # noqa: PT017
+
     @pytest.mark.anyio()
     @pytest.mark.parametrize("value", list(range(10)))
     async def test_await(self, value: Any):
