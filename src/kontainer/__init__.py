@@ -8,6 +8,7 @@ from kontainer.decorator import catch, optional
 from kontainer.flow import (
     bind_elements,
     compose_funcs,
+    flip,
     flip_func,
     flowtools,
     map_elements,
@@ -32,6 +33,7 @@ __all__ = [
     "bind_elements",
     "compose_funcs",
     "flip_func",
+    "flip",
     "toggle",
     "undefined",
     "__version__",

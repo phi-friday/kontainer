@@ -16,10 +16,6 @@ def identity(value: ValueT1) -> ValueT1:
     return value
 
 
-def flip(values: tuple[ValueT1, ValueT2]) -> tuple[ValueT2, ValueT1]:
-    return (values[1], values[0])
-
-
 def first(values: tuple[ValueT1, Unpack[tuple[Any, ...]]]) -> ValueT1:
     return values[0]
 

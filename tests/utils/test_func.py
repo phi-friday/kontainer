@@ -15,15 +15,6 @@ def test_identity(values: tuple[Any, ...]):
     assert value == values
 
 
-@pytest.mark.parametrize("values", [(1, 2), ("b", 1), (4, 5)])
-def test_flip(values: tuple[Any, Any]):
-    value = func.flip(values)
-    assert isinstance(value, tuple)
-    assert len(value) == 2
-    assert value[0] == values[1]
-    assert value[1] == values[0]
-
-
 @pytest.mark.parametrize("values", PARAMS)
 def test_first(values: tuple[Any, ...]):
     value = func.first(values)
