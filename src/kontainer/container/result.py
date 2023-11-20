@@ -113,11 +113,11 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         raise NotImplementedError
 
     @override
-    def default(self, value: Any) -> ValueT:
+    def default(self, value: AnotherT) -> ValueT | AnotherT:
         raise NotImplementedError
 
     @override
-    def map_default(self, func: Callable[[], Any]) -> ValueT:
+    def map_default(self, func: Callable[[], AnotherT]) -> ValueT | AnotherT:
         raise NotImplementedError
 
     @override

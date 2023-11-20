@@ -96,11 +96,11 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
         raise NotImplementedError
 
     @override
-    def default(self, value: Any) -> ValueT:
+    def default(self, value: OtherT) -> ValueT | OtherT:
         raise NotImplementedError
 
     @override
-    def map_default(self, func: Callable[[], Any]) -> ValueT:
+    def map_default(self, func: Callable[[], OtherT]) -> ValueT | OtherT:
         raise NotImplementedError
 
     @override
