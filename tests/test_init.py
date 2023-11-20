@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-if sys.version_info < (3, 11):
+if sys.version_info < (3, 12):
     import tomli as toml  # type: ignore
 else:
     import toml  # type: ignore
