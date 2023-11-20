@@ -220,14 +220,6 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return super(Container, cls).__new__(cls)
 
     @override
-    def send(self, *args: Any, **kwargs: Any) -> Any:
-        raise StopIteration(self._other)
-
-    @override
-    def throw(self, *args: Any, **kwargs: Any) -> Any:
-        raise StopIteration(self._other)
-
-    @override
     def map_value(self, func: Callable[[ValueT], AnotherT]) -> Result[AnotherT, OtherT]:
         return Error(self._other)
 
