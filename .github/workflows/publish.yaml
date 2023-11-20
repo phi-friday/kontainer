@@ -38,5 +38,4 @@ jobs:
 
       - name: Release to PyPI
         run: |
-          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} || \
-            echo 'Version exists'
+          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
