@@ -73,11 +73,62 @@ def test_unwrap_error_without_error(value: Any):
 
 
 @given(arbitrary_value)
-def test_unwrap_done(value: Any):
+def test_unwrap_error_done(value: Any):
     done = Done(value)
     assert isinstance(done, Done)
     with pytest.raises(KontainerTypeError, match="Not an error container"):
         done.unwrap_error()
+
+
+@given(arbitrary_error, arbitrary_value)
+def test_unwrap_error_or(value: Any, other: Any):
+    error = Error(value)
+    assert isinstance(error, Error)
+    with pytest.raises(type(value)):
+        error.unwrap_error_or(other)
+
+
+@given(arbitrary_value, arbitrary_value)
+def test_unwrap_error_or_without_error(value: Any, other: Any):
+    error = Error(value)
+    assert isinstance(error, Error)
+    result = error.unwrap_error_or(other)
+    assert result == other
+
+
+@given(arbitrary_value, arbitrary_value)
+def test_unwrap_error_or_done(value: Any, other: Any):
+    done = Done(value)
+    assert isinstance(done, Done)
+    with pytest.raises(KontainerTypeError, match="Not an error container"):
+        done.unwrap_error_or(other)
+
+
+@given(arbitrary_error, arbitrary_value)
+def test_unwrap_error_or_else(value: Any, other: Any):
+    error = Error(value)
+    func = lambda: other
+    assert isinstance(error, Error)
+    with pytest.raises(type(value)):
+        error.unwrap_error_or_else(func)
+
+
+@given(arbitrary_value, arbitrary_value)
+def test_unwrap_error_or_else_without_error(value: Any, other: Any):
+    error = Error(value)
+    func = lambda: other
+    assert isinstance(error, Error)
+    result = error.unwrap_error_or_else(func)
+    assert result == other
+
+
+@given(arbitrary_value, arbitrary_value)
+def test_unwrap_error_or_else_done(value: Any, other: Any):
+    done = Done(value)
+    func = lambda: other
+    assert isinstance(done, Done)
+    with pytest.raises(KontainerTypeError, match="Not an error container"):
+        done.unwrap_error_or_else(func)
 
 
 def test_switch_done():

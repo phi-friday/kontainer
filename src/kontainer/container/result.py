@@ -125,13 +125,13 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         raise NotImplementedError
 
     def unwrap_error(self) -> NoReturn:
-        if not isinstance(self, Error):
-            raise KontainerTypeError("Not an error container")
+        raise NotImplementedError
 
-        if not isinstance(self._other, Exception):
-            raise KontainerTypeError("error container does not hold an error")
+    def unwrap_error_or(self, value: AnotherT) -> AnotherT | NoReturn:
+        raise NotImplementedError
 
-        raise self._other
+    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
+        raise NotImplementedError
 
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
@@ -192,6 +192,18 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def unwrap(self) -> ValueT:
         return self._value
+
+    @override
+    def unwrap_error(self) -> NoReturn:
+        raise KontainerTypeError("Not an error container")
+
+    @override
+    def unwrap_error_or(self, value: Any) -> NoReturn:
+        raise KontainerTypeError("Not an error container")
+
+    @override
+    def unwrap_error_or_else(self, func: Any) -> NoReturn:
+        raise KontainerTypeError("Not an error container")
 
 
 class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
@@ -272,3 +284,22 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def unwrap(self) -> NoReturn:
         self.unwrap_error()
+
+    @override
+    def unwrap_error(self) -> NoReturn:
+        if not isinstance(self._other, Exception):
+            raise KontainerTypeError("error container does not hold an error")
+
+        raise self._other
+
+    @override
+    def unwrap_error_or(self, value: AnotherT) -> AnotherT | NoReturn:
+        if isinstance(self._other, Exception):
+            raise self._other
+        return value
+
+    @override
+    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
+        if isinstance(self._other, Exception):
+            raise self._other
+        return func()
