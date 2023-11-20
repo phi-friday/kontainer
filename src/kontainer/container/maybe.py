@@ -176,6 +176,14 @@ class Null(Maybe[ValueT], Generic[ValueT]):
         return super(Container, cls).__new__(cls)
 
     @override
+    def send(self, *args: Any, **kwargs: Any) -> Any:
+        raise StopIteration(None)
+
+    @override
+    def throw(self, *args: Any, **kwargs: Any) -> Any:
+        raise StopIteration(None)
+
+    @override
     def map_value(self, func: Callable[[ValueT], OtherT]) -> Maybe[OtherT]:
         return Null(None)
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generator, Generic, Iterable
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generator, Generic
 
-from typing_extensions import TypeVar
+from typing_extensions import TypeVar, override
 
 from kontainer.utils.generator import create_generator
 
@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 __all__ = ["Container"]
 
 
-class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], ABC):
+class Container(
+    Generator[Any, Any, ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], ABC
+):
     r"""Container
 
     map: (x, y) -> (X, y)
@@ -48,6 +50,14 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
 
     def __await__(self) -> Generator[Any, Any, ValueT]:
         return iter(self)
+
+    @override
+    def send(self, *args: Any, **kwargs: Any) -> Any:
+        raise StopIteration(self._value)
+
+    @override
+    def throw(self, *args: Any, **kwargs: Any) -> Any:
+        raise StopIteration(self._value)
 
     @abstractmethod
     def map_value(
