@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "kontainer"
 version = "0.1.0"
-description = ""
+description = "How to look like functional programming"
 authors = ["phi <phi.friday@gmail.com>"]
 readme = "README.md"
+license = "MIT License"
+repository = "https://github.com/phi-friday/kontainer"
 packages = [{ include = "kontainer", from = "src" }]
 
 [tool.poetry.dependencies]
