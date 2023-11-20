@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Generic, cast, overload
+from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast, overload
 
 from typing_extensions import Self, TypeVar, override
 
@@ -107,6 +107,11 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     def unwrap(self) -> ValueT:
         raise NotImplementedError
 
+    @property
+    @override
+    def is_positive(self) -> bool:
+        raise NotImplementedError
+
 
 class Some(Maybe[ValueT], Generic[ValueT]):
     _value: ValueT
@@ -162,6 +167,11 @@ class Some(Maybe[ValueT], Generic[ValueT]):
     @override
     def unwrap(self) -> ValueT:
         return self._value
+
+    @property
+    @override
+    def is_positive(self) -> Literal[True]:
+        return True
 
 
 class Null(Maybe[ValueT], Generic[ValueT]):
@@ -222,3 +232,8 @@ class Null(Maybe[ValueT], Generic[ValueT]):
     @override
     def unwrap(self) -> None:
         return None
+
+    @property
+    @override
+    def is_positive(self) -> Literal[False]:
+        return False

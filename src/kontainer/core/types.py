@@ -160,3 +160,11 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
 
     @abstractmethod
     def unwrap(self) -> ValueT: ...
+
+    @property
+    @abstractmethod
+    def is_positive(self) -> bool: ...
+
+    @property
+    def is_negative(self) -> bool:
+        return not self.is_positive

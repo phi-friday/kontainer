@@ -144,3 +144,21 @@ def test_repr(value: Any):
         value = None
 
     assert repr(maybe) == format_text.format(name=name, value=repr(value))
+
+
+@given(st.one_of(arbitrary, st.none(), st.just(undefined)))
+def test_positive(value: Any):
+    maybe = Maybe(value)
+    if isinstance(maybe, Some):
+        assert maybe.is_positive is True
+    else:
+        assert maybe.is_positive is False
+
+
+@given(st.one_of(arbitrary, st.none(), st.just(undefined)))
+def test_negative(value: Any):
+    maybe = Maybe(value)
+    if isinstance(maybe, Some):
+        assert maybe.is_negative is False
+    else:
+        assert maybe.is_negative is True

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Generic, NoReturn, overload
+from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, NoReturn, overload
 
 from typing_extensions import Self, TypeVar, override
 
@@ -133,6 +133,11 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
         raise NotImplementedError
 
+    @property
+    @override
+    def is_positive(self) -> bool:
+        raise NotImplementedError
+
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
@@ -204,6 +209,11 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def unwrap_error_or_else(self, func: Any) -> NoReturn:
         raise KontainerTypeError("Not an error container")
+
+    @property
+    @override
+    def is_positive(self) -> Literal[True]:
+        return True
 
 
 class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
@@ -303,3 +313,8 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         if isinstance(self._other, Exception):
             raise self._other
         return func()
+
+    @property
+    @override
+    def is_positive(self) -> Literal[False]:
+        return False

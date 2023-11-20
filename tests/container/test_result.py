@@ -311,3 +311,21 @@ async def test_await_error(value: Exception):
     coroutine = func()
     with pytest.raises(type(value)):
         await coroutine
+
+
+@given(arbitrary)
+def test_positive(value: Any):
+    result = Result(value)
+    if isinstance(result, Done):
+        assert result.is_positive is True
+    else:
+        assert result.is_positive is False
+
+
+@given(arbitrary)
+def test_negative(value: Any):
+    result = Result(value)
+    if isinstance(result, Done):
+        assert result.is_negative is False
+    else:
+        assert result.is_negative is True
