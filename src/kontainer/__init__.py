@@ -36,7 +36,6 @@ __all__ = [
     "flip",
     "toggle",
     "undefined",
-    "__version__",
 ]
 
 __version__: str
