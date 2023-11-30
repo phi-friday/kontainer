@@ -223,12 +223,12 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         raise KontainerTypeError("Not an error container")
 
     @override
-    def unwrap_error_or(self, value: Any) -> NoReturn:
-        raise KontainerTypeError("Not an error container")
+    def unwrap_error_or(self, value: AnotherT) -> AnotherT:
+        return value
 
     @override
-    def unwrap_error_or_else(self, func: Any) -> NoReturn:
-        raise KontainerTypeError("Not an error container")
+    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT:
+        return func()
 
     @property
     @override

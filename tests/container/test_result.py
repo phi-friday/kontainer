@@ -100,8 +100,7 @@ def test_unwrap_error_or_without_error(value: Any, other: Any):
 def test_unwrap_error_or_done(value: Any, other: Any):
     done = Done(value)
     assert isinstance(done, Done)
-    with pytest.raises(KontainerTypeError, match="Not an error container"):
-        done.unwrap_error_or(other)
+    assert done.unwrap_error_or(other) == other
 
 
 @given(arbitrary_error, arbitrary_value)
@@ -127,8 +126,7 @@ def test_unwrap_error_or_else_done(value: Any, other: Any):
     done = Done(value)
     func = lambda: other
     assert isinstance(done, Done)
-    with pytest.raises(KontainerTypeError, match="Not an error container"):
-        done.unwrap_error_or_else(func)
+    assert done.unwrap_error_or_else(func) == other
 
 
 def test_switch_done():
