@@ -344,3 +344,17 @@ def test_construct_using_alias_error(value: Any):
     assert isinstance(result, Error)
     with pytest.raises(type(value)):
         result.unwrap()
+
+
+@given(arbitrary_value)
+def test_done_check(value: Any):
+    result = Result.done(value)
+    assert isinstance(result, Done)
+    assert result.is_done(result)
+
+
+@given(arbitrary_error)
+def test_error_check(value: Any):
+    result = Result.error(value)
+    assert isinstance(result, Error)
+    assert result.is_error(result)

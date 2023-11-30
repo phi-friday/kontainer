@@ -176,3 +176,17 @@ def test_construct_using_alias_null(value: Any):
     maybe = Maybe.null(value)
     assert isinstance(maybe, Null)
     assert maybe.unwrap() is None
+
+
+@given(arbitrary)
+def test_some_check(value: Any):
+    maybe = Maybe.some(value)
+    assert isinstance(maybe, Some)
+    assert maybe.is_some(maybe)
+
+
+@given(arbitrary)
+def test_null_check(value: Any):
+    maybe = Maybe.null(value)
+    assert isinstance(maybe, Null)
+    assert maybe.is_null(maybe)

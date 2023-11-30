@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast, overload
 
-from typing_extensions import Self, TypeVar, override
+from typing_extensions import Self, TypeGuard, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
 from kontainer.core.types import Container
@@ -119,6 +119,14 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     @staticmethod
     def null(value: Any) -> Null[Any]:  # noqa: ARG004
         return Null(None)
+
+    @staticmethod
+    def is_some(maybe: Maybe[OtherT]) -> TypeGuard[Some[OtherT]]:
+        return maybe.is_positive
+
+    @staticmethod
+    def is_null(maybe: Maybe[OtherT]) -> TypeGuard[Null[OtherT]]:
+        return maybe.is_negative
 
 
 class Some(Maybe[ValueT], Generic[ValueT]):

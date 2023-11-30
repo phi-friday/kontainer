@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, NoReturn, overload
 
-from typing_extensions import Self, TypeVar, override
+from typing_extensions import Self, TypeGuard, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
 from kontainer.core.exception import KontainerTypeError
@@ -145,6 +145,18 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     @staticmethod
     def error(value: ErrorT) -> Error[Any, ErrorT]:
         return Error(value)
+
+    @staticmethod
+    def is_done(
+        result: Result[AnotherT, ElementT]
+    ) -> TypeGuard[Done[AnotherT, ElementT]]:
+        return result.is_positive
+
+    @staticmethod
+    def is_error(
+        result: Result[ElementT, AnotherT]
+    ) -> TypeGuard[Error[ElementT, AnotherT]]:
+        return result.is_negative
 
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
