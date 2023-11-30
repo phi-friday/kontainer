@@ -162,3 +162,17 @@ def test_negative(value: Any):
         assert maybe.is_negative is False
     else:
         assert maybe.is_negative is True
+
+
+@given(arbitrary)
+def test_construct_using_alias_some(value: Any):
+    maybe = Maybe.some(value)
+    assert isinstance(maybe, Some)
+    assert maybe.unwrap() == value
+
+
+@given(arbitrary)
+def test_construct_using_alias_null(value: Any):
+    maybe = Maybe.null(value)
+    assert isinstance(maybe, Null)
+    assert maybe.unwrap() is None

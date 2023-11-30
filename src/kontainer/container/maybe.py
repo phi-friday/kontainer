@@ -112,6 +112,14 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     def is_positive(self) -> bool:
         raise NotImplementedError
 
+    @staticmethod
+    def some(value: OtherT) -> Some[OtherT]:
+        return Some(value)
+
+    @staticmethod
+    def null(value: Any) -> Null[Any]:  # noqa: ARG004
+        return Null(None)
+
 
 class Some(Maybe[ValueT], Generic[ValueT]):
     _value: ValueT
@@ -182,11 +190,11 @@ class Null(Maybe[ValueT], Generic[ValueT]):
         super().__init__(value)
 
     @override
-    def __new__(cls, value: ValueT) -> Maybe[Any]:
+    def __new__(cls, value: ValueT) -> Null[Any]:
         return super(Container, cls).__new__(cls)
 
     @override
-    def map_value(self, func: Callable[[ValueT], OtherT]) -> Maybe[OtherT]:
+    def map_value(self, func: Callable[[ValueT], OtherT]) -> Null[OtherT]:
         return Null(None)
 
     @override

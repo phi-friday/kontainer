@@ -138,6 +138,14 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def is_positive(self) -> bool:
         raise NotImplementedError
 
+    @staticmethod
+    def done(value: AnotherT) -> Done[AnotherT, Any]:
+        return Done(value)
+
+    @staticmethod
+    def error(value: ErrorT) -> Error[Any, ErrorT]:
+        return Error(value)
+
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
@@ -225,20 +233,20 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         self._other = value
 
     @overload
-    def __new__(cls, value: Undefined) -> Result[Any, Any]: ...
+    def __new__(cls, value: Undefined) -> Error[Any, Any]: ...
 
     @overload
-    def __new__(cls, value: OtherT) -> Result[ValueT, OtherT]: ...
+    def __new__(cls, value: OtherT) -> Error[ValueT, OtherT]: ...
 
     @overload
     def __new__(
         cls, value: OtherT | Undefined
-    ) -> Result[ValueT, OtherT] | Result[Any, Any]: ...
+    ) -> Error[ValueT, OtherT] | Error[Any, Any]: ...
 
     @override
     def __new__(
         cls, value: OtherT | Undefined
-    ) -> Result[ValueT, OtherT] | Result[Any, Any]:
+    ) -> Error[ValueT, OtherT] | Error[Any, Any]:
         return super(Container, cls).__new__(cls)
 
     @override

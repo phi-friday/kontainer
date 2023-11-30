@@ -329,3 +329,18 @@ def test_negative(value: Any):
         assert result.is_negative is False
     else:
         assert result.is_negative is True
+
+
+@given(arbitrary_value)
+def test_construct_using_alias_done(value: Any):
+    result = Result.done(value)
+    assert isinstance(result, Done)
+    assert result.unwrap() == value
+
+
+@given(arbitrary_error)
+def test_construct_using_alias_error(value: Any):
+    result = Result.error(value)
+    assert isinstance(result, Error)
+    with pytest.raises(type(value)):
+        result.unwrap()
