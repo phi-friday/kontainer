@@ -9,16 +9,23 @@ from kontainer.core.exception import UndefinedRecreateWarning
 
 
 def test_recreate_undefined():
+    new = object.__new__(Undefined)
     with pytest.warns(UndefinedRecreateWarning):
-        Undefined()
+        new.__init__()
 
 
 def test_undefined_eq():
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UndefinedRecreateWarning)
-        new = Undefined()
+        new = object.__new__(Undefined)
+        new.__init__()
 
     assert undefined != new
+
+
+def test_construct_undefined():
+    new = Undefined()
+    assert new is undefined
 
 
 def test_undefined_repr():

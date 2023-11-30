@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from typing import final
 
 from kontainer.core.exception import UndefinedRecreateWarning
 
@@ -9,6 +10,7 @@ __all__ = ["undefined", "Undefined"]
 _UNDEFINED_COUNT = 0
 
 
+@final
 class Undefined:
     def __init__(self) -> None:
         global _UNDEFINED_COUNT  # noqa: PLW0603
@@ -23,6 +25,9 @@ class Undefined:
             stacklevel=2,
         )
 
+    def __new__(cls) -> Undefined:
+        return undefined
+
     def __eq__(self, other: object) -> bool:
         return self is other
 
@@ -36,4 +41,5 @@ class Undefined:
         return "undefined"
 
 
-undefined = Undefined()
+undefined: Undefined = object.__new__(Undefined)
+undefined.__init__()
