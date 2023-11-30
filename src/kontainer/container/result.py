@@ -133,6 +133,11 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
         raise NotImplementedError
 
+    def unwrap_error_or_with(
+        self, func: Callable[[OtherT], AnotherT]
+    ) -> AnotherT | NoReturn:
+        raise NotImplementedError
+
     @property
     @override
     def is_positive(self) -> bool:
@@ -229,6 +234,12 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     @override
     def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT:
         return func()
+
+    def unwrap_error_or_with(
+        self,
+        func: Callable[[OtherT], Any],  # noqa: ARG002
+    ) -> NoReturn:
+        raise KontainerTypeError("Not an error container")
 
     @property
     @override
@@ -333,6 +344,9 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         if isinstance(self._other, Exception):
             raise self._other
         return func()
+
+    def unwrap_error_or_with(self, func: Callable[[OtherT], AnotherT]) -> AnotherT:
+        return func(self._other)
 
     @property
     @override

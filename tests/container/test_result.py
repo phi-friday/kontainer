@@ -356,3 +356,29 @@ def test_error_check(value: Any):
     result = Result.error(value)
     assert isinstance(result, Error)
     assert result.is_error(result)
+
+
+@given(arbitrary_error)
+def test_unwrap_error_or_with(value: Any):
+    error = Error(value)
+    func = lambda x: repr(x)
+    assert isinstance(error, Error)
+    assert error.unwrap_error_or_with(func) == repr(value)
+
+
+@given(arbitrary_value)
+def test_unwrap_error_or_with_without_error(value: Any):
+    error = Error(value)
+    func = lambda x: repr(x)
+    assert isinstance(error, Error)
+    result = error.unwrap_error_or_with(func)
+    assert result == repr(value)
+
+
+@given(arbitrary_value)
+def test_unwrap_error_or_with_done(value: Any):
+    done = Done(value)
+    func = lambda x: str(x)
+    assert isinstance(done, Done)
+    with pytest.raises(KontainerTypeError, match="Not an error container"):
+        done.unwrap_error_or_with(func)
