@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from kontainer.flow import flowtools
-from kontainer.flow.compose import compose_funcs
+from kontainer.flow.compose import compose_bind_funcs, compose_funcs
 from kontainer.flow.convert import toggle
 from kontainer.flow.flip import flip, flip_func
 from kontainer.flow.maps import bind_elements, map_elements
@@ -15,6 +15,7 @@ __all__ = [
     "map_elements",
     "bind_elements",
     "compose_funcs",
+    "compose_bind_funcs",
     "flip_func",
     "flip",
     "flowtools",
