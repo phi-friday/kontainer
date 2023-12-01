@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from functools import reduce
-from typing import TYPE_CHECKING, Any, Callable, cast, overload
+from typing import TYPE_CHECKING, Any, Callable, overload
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
@@ -535,36 +534,38 @@ class _Compose:
         self._funcs = funcs
 
     def __call__(self, value: Any) -> Any:
-        return reduce(_run_func, self._funcs, value)
+        result = self._funcs[0](value)
+        for func in self._funcs[1:]:
+            result = func(result)
+        return result
 
 
 class _ComposeBinds:
     __slots__ = ("_funcs",)
 
     def __init__(self, funcs: tuple[Callable[[Any], Container[Any, Any]], ...]) -> None:
-        if funcs:
-            self._funcs = funcs
-        else:
-            from kontainer.container.maybe import Some
-
-            self._funcs = (Some,)
+        self._funcs = funcs
 
     def __call__(self, value: Any) -> Container[Any, Any]:
-        result = cast("Container[Any, Any]", self._funcs[0](value))
+        result = self._funcs[0](value)
         for func in self._funcs[1:]:
             result = result.bind_value(func)
         return result
 
 
 def compose_funcs(*funcs: Callable[[Any], Any]) -> Callable[[Any], Any]:
+    if not funcs:
+        from kontainer.flow.flowtools import identity
+
+        funcs = (identity,)
     return _Compose(funcs)
 
 
 def compose_bind_funcs(
     *funcs: Callable[[Any], Container[Any, Any]]
 ) -> Callable[[Any], Container[Any, Any]]:
+    if not funcs:
+        from kontainer.container.maybe import Some
+
+        funcs = (Some,)
     return _ComposeBinds(funcs)
-
-
-def _run_func(value: ValueT, func: Callable[[ValueT], ValueT0]) -> ValueT0:
-    return func(value)
