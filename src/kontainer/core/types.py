@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generator, Generic, Iterable
 
-from typing_extensions import TypeVar
+from typing_extensions import Self, TypeVar
 
 from kontainer.utils.generator import create_generator
 
@@ -168,3 +168,6 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
     @property
     def is_negative(self) -> bool:
         return not self.is_positive
+
+    @abstractmethod
+    def copy(self) -> Self: ...

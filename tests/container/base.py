@@ -270,3 +270,15 @@ class BaseTestContainer(ABC):
         other: Any = 1
         with pytest.raises(AttributeError):
             container.bind_container(other, func)
+
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_copy(self, value: Any):
+        container = self.container_type(value)
+        new = container.copy()
+        assert container is not new
+        assert type(container) is type(new)
+        assert container._value is new._value
+        if hasattr(container, "_other"):
+            assert hasattr(new, "_other")
+            assert getattr(container, "_other", None) is getattr(new, "_other", None)
