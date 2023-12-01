@@ -83,3 +83,50 @@ def test_wrap_nested(value: Any):
     assert isinstance(maybe, Maybe)
     result = maybe.unwrap()
     assert result == value
+
+
+@given(arbitrary)
+def test_wrap_async(value: Any):
+    maybe = Maybe(value)
+
+    @optional
+    async def f() -> Any:
+        return await maybe
+
+    result = f()
+    assert isinstance(result, Maybe)
+    assert result.unwrap() == value
+
+
+@given(arbitrary)
+def test_wrap_async_nested(value: Any):
+    maybe = Maybe(value)
+
+    @optional
+    async def f() -> Any:
+        new = await maybe
+        return Maybe(new)
+
+    result = f()
+    assert isinstance(result, Maybe)
+    assert result.unwrap() == value
+
+
+@given(arbitrary)
+def test_wrap_async_more_nested(value: Any):
+    maybe = Maybe(value)
+
+    @optional
+    async def f() -> Any:
+        new = await maybe
+        return Maybe(new)
+
+    @optional
+    async def g() -> Any:
+        left = await maybe
+        right = await f()
+        return Maybe((left, right))
+
+    result = g()
+    assert isinstance(result, Maybe)
+    assert result.unwrap() == (value, value)
