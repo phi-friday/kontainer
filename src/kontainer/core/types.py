@@ -49,6 +49,16 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
     def __await__(self) -> Generator[Any, Any, ValueT]:
         return iter(self)
 
+    def __copy__(self) -> Self:
+        return self.copy()
+
+    def __deepcopy__(self, memo: dict[Any, Any] | None = None) -> Self:
+        new = self.deepcopy()
+        if memo is None:
+            return new
+        memo[id(new)] = new
+        return new
+
     @abstractmethod
     def map_value(
         self, func: Callable[[ValueT], AnotherT]
