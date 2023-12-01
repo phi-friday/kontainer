@@ -282,3 +282,27 @@ class BaseTestContainer(ABC):
         if hasattr(container, "_other"):
             assert hasattr(new, "_other")
             assert getattr(container, "_other", None) is getattr(new, "_other", None)
+
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_deepcopy(self, value: Any):
+        class Dummy:
+            def __init__(self, value: Any) -> None:
+                self.value = value
+
+            def __eq__(self, value: object) -> bool:
+                return isinstance(value, Dummy) and self.value == value.value
+
+        obj = Dummy(value)
+        container = self.container_type(obj)
+        new = container.deepcopy()
+        assert container is not new
+        assert type(container) is type(new)
+        assert container._value == new._value
+        assert container._value is not new._value
+        if hasattr(container, "_other"):
+            assert hasattr(new, "_other")
+            assert getattr(container, "_other", None) == getattr(new, "_other", None)
+            assert getattr(container, "_other", None) is not getattr(
+                new, "_other", None
+            )

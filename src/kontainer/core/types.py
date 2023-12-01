@@ -171,3 +171,6 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
 
     @abstractmethod
     def copy(self) -> Self: ...
+
+    @abstractmethod
+    def deepcopy(self) -> Self: ...

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast, overload
 
 from typing_extensions import Self, TypeGuard, TypeVar, override
@@ -132,6 +133,10 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     def copy(self) -> Self:
         raise NotImplementedError
 
+    @override
+    def deepcopy(self) -> Self:
+        raise NotImplementedError
+
 
 class Some(Maybe[ValueT], Generic[ValueT]):
     _value: ValueT
@@ -196,6 +201,11 @@ class Some(Maybe[ValueT], Generic[ValueT]):
     @override
     def copy(self) -> Self:
         return self.some(self._value)
+
+    @override
+    def deepcopy(self) -> Self:
+        new = deepcopy(self._value)
+        return self.some(new)
 
 
 class Null(Maybe[ValueT], Generic[ValueT]):
@@ -265,3 +275,8 @@ class Null(Maybe[ValueT], Generic[ValueT]):
     @override
     def copy(self) -> Self:
         return self.null(self._value)
+
+    @override
+    def deepcopy(self) -> Self:
+        new = deepcopy(self._value)
+        return self.null(new)
