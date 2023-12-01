@@ -179,3 +179,30 @@ def test_wrap_nested_error_type_failed(error_types: list[type[Exception]]):
 
     with pytest.raises(UserError):
         f()
+
+
+@given(arbitrary)
+def test_wrap_async(value: Any):
+    result = Result(value)
+
+    @catch
+    async def f() -> Any:
+        return await result
+
+    new = f()
+    assert isinstance(new, Result)
+    assert result.unwrap() == value
+
+
+@given(arbitrary)
+def test_wrap_async_nested(value: Any):
+    result = Result(value)
+
+    @catch
+    async def f() -> Any:
+        new = await result
+        return Result(new)
+
+    new = f()
+    assert isinstance(new, Result)
+    assert result.unwrap() == value
