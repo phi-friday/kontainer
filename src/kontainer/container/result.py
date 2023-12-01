@@ -256,11 +256,11 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return True
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Done[ValueT, OtherT]:
         return self.done(self._value)
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Done[ValueT, OtherT]:
         new = deepcopy(self._value)
         return self.done(new)
 
@@ -372,10 +372,10 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         return False
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Error[ValueT, OtherT]:
         return self.error(self._other)
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Error[ValueT, OtherT]:
         new = deepcopy(self._other)
         return self.error(new)

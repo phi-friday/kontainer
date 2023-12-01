@@ -199,11 +199,11 @@ class Some(Maybe[ValueT], Generic[ValueT]):
         return True
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Some[ValueT]:
         return self.some(self._value)
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Some[ValueT]:
         new = deepcopy(self._value)
         return self.some(new)
 
@@ -273,10 +273,10 @@ class Null(Maybe[ValueT], Generic[ValueT]):
         return False
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Null[ValueT]:
         return self.null(self._value)
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Null[ValueT]:
         new = deepcopy(self._value)
         return self.null(new)
