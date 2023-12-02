@@ -245,23 +245,7 @@ def catch(
     | _Catch[ErrorT2]
     | _Catch[Exception]
 ):
+    _catch = _Catch(error_type=error_type)
     if func is None:
-        return _Catch(error_type=error_type)
-
-    @wraps(func)
-    def inner(*args: ParamT.args, **kwargs: ParamT.kwargs) -> Result[ValueT, Any]:
-        try:
-            result = func(*args, **kwargs)
-            if not isinstance(result, Container) and isinstance(result, Awaitable):
-                result = result.__await__()
-            if isinstance(result, Generator):
-                result = unwrap_generator(result)
-        except error_type as exc:
-            return Error(exc)
-        if isinstance(result, Error):
-            return Error(result._other)  # noqa: SLF001
-        if isinstance(result, Result):
-            return Result(result._value)  # noqa: SLF001
-        return Result(result)
-
-    return inner
+        return _catch
+    return _catch(func)  # type: ignore
