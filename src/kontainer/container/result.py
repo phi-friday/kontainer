@@ -20,6 +20,10 @@ __all__ = ["Result"]
 
 
 class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
+    @property
+    def _value_or_other(self) -> ValueT | OtherT:
+        raise NotImplementedError
+
     @override
     def __init__(self, value: ValueT) -> None:
         self._value = value
@@ -174,6 +178,11 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
 
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
+    @property
+    @override
+    def _value_or_other(self) -> ValueT:
+        return self._value
+
     @override
     def __new__(cls, value: ValueT) -> Self:
         return super(Container, cls).__new__(cls)
@@ -267,6 +276,11 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
 
 class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     __slots__ = ("_value", "_other")
+
+    @property
+    @override
+    def _value_or_other(self) -> OtherT:
+        return self._other
 
     @override
     def __init__(self, value: OtherT) -> None:
