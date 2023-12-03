@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from abc import ABC
 from typing import Any, Callable, ClassVar
 
@@ -271,17 +272,58 @@ class BaseTestContainer(ABC):
         with pytest.raises(AttributeError):
             container.bind_container(other, func)
 
-    @given(arbitrary)
-    @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_copy(self, value: Any):
-        container = self.container_type(value)
-        new = container.copy()
+    def _test_copy(
+        self, container: Container[Any, Any], new: Container[Any, Any]
+    ) -> None:
         assert container is not new
         assert type(container) is type(new)
         assert container._value is new._value
         if hasattr(container, "_other"):
             assert hasattr(new, "_other")
             assert getattr(container, "_other", None) is getattr(new, "_other", None)
+
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_copy_method(self, value: Any):
+        container = self.container_type(value)
+        new = container.copy()
+        self._test_copy(container, new)
+
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_copy(self, value: Any):
+        container = self.container_type(value)
+        new = copy.copy(container)
+        self._test_copy(container, new)
+
+    def _test_deepcopy(
+        self, container: Container[Any, Any], new: Container[Any, Any]
+    ) -> None:
+        assert container is not new
+        assert type(container) is type(new)
+        assert container._value == new._value
+        assert container._value is not new._value
+        if hasattr(container, "_other"):
+            assert hasattr(new, "_other")
+            assert getattr(container, "_other", None) == getattr(new, "_other", None)
+            assert getattr(container, "_other", None) is not getattr(
+                new, "_other", None
+            )
+
+    @given(arbitrary)
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
+    def test_deepcopy_method(self, value: Any):
+        class Dummy:
+            def __init__(self, value: Any) -> None:
+                self.value = value
+
+            def __eq__(self, value: object) -> bool:
+                return isinstance(value, Dummy) and self.value == value.value
+
+        obj = Dummy(value)
+        container = self.container_type(obj)
+        new = container.deepcopy()
+        self._test_deepcopy(container, new)
 
     @given(arbitrary)
     @settings(suppress_health_check=[HealthCheck.differing_executors])
@@ -295,14 +337,5 @@ class BaseTestContainer(ABC):
 
         obj = Dummy(value)
         container = self.container_type(obj)
-        new = container.deepcopy()
-        assert container is not new
-        assert type(container) is type(new)
-        assert container._value == new._value
-        assert container._value is not new._value
-        if hasattr(container, "_other"):
-            assert hasattr(new, "_other")
-            assert getattr(container, "_other", None) == getattr(new, "_other", None)
-            assert getattr(container, "_other", None) is not getattr(
-                new, "_other", None
-            )
+        new = copy.deepcopy(container)
+        self._test_deepcopy(container, new)
