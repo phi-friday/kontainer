@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generator, Generic, 
 
 from typing_extensions import ParamSpec, TypeVar
 
-from kontainer.container.result import Error, Result
+from kontainer.container.result import Result
 from kontainer.core.types import Container
 from kontainer.utils.generator import unwrap_generator
 
@@ -80,9 +80,9 @@ class _Catch(Generic[ErrorT]):
                 if isinstance(result, Generator):
                     result = unwrap_generator(result)
             except self._error_type as exc:
-                return Error(exc)
+                return Result.error(exc)
             if isinstance(result, Result):
-                return Result(result._value_or_other)  # noqa: SLF001
+                return result.copy()  # type: ignore
             return Result(result)
 
         return inner

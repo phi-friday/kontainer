@@ -92,7 +92,7 @@ def optional(
         if isinstance(result, Generator):
             result = unwrap_generator(result)
         if isinstance(result, Maybe):
-            return Maybe(result._value)  # noqa: SLF001
+            return result.copy()
         return Maybe(result)
 
     return inner
