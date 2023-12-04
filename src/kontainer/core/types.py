@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generator, Generic, Iterable
 
-from typing_extensions import Self, TypeVar
+from typing_extensions import TypeVar
 
 from kontainer.utils.generator import create_generator
 
@@ -49,10 +49,12 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
     def __await__(self) -> Generator[Any, Any, ValueT]:
         return iter(self)
 
-    def __copy__(self) -> Self:
+    def __copy__(self) -> Container[ValueT, OtherT]:
         return self.copy()
 
-    def __deepcopy__(self, memo: dict[Any, Any] | None = None) -> Self:
+    def __deepcopy__(
+        self, memo: dict[Any, Any] | None = None
+    ) -> Container[ValueT, OtherT]:
         new = self.deepcopy()
         if memo is None:
             return new
@@ -180,7 +182,7 @@ class Container(Iterable[ValueT], Awaitable[ValueT], Generic[ValueT, OtherT], AB
         return not self.is_positive
 
     @abstractmethod
-    def copy(self) -> Self: ...
+    def copy(self) -> Container[ValueT, OtherT]: ...
 
     @abstractmethod
-    def deepcopy(self) -> Self: ...
+    def deepcopy(self) -> Container[ValueT, OtherT]: ...

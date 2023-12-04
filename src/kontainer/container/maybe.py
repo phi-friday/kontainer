@@ -17,6 +17,14 @@ __all__ = ["Maybe"]
 
 
 class Maybe(Container[ValueT, None], Generic[ValueT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Maybe[ValueT]: ...
+
+        @override
+        def __deepcopy__(self, memo: dict[Any, Any] | None = None) -> Maybe[ValueT]: ...
+
     @override
     def __init__(self, value: ValueT | None) -> None:
         self._value = value
@@ -130,15 +138,23 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
         return maybe.is_negative
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Maybe[ValueT]:
         raise NotImplementedError
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Maybe[ValueT]:
         raise NotImplementedError
 
 
 class Some(Maybe[ValueT], Generic[ValueT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Some[ValueT]: ...
+
+        @override
+        def __deepcopy__(self, memo: dict[Any, Any] | None = None) -> Some[ValueT]: ...
+
     _value: ValueT
 
     @override
@@ -209,6 +225,14 @@ class Some(Maybe[ValueT], Generic[ValueT]):
 
 
 class Null(Maybe[ValueT], Generic[ValueT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Null[ValueT]: ...
+
+        @override
+        def __deepcopy__(self, memo: dict[Any, Any] | None = None) -> Null[ValueT]: ...
+
     @override
     def __init__(self, value: ValueT | None) -> None:
         if value is undefined:

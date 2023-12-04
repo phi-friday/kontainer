@@ -20,6 +20,16 @@ __all__ = ["Result"]
 
 
 class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Result[ValueT, OtherT]: ...
+
+        @override
+        def __deepcopy__(
+            self, memo: dict[Any, Any] | None = None
+        ) -> Result[ValueT, OtherT]: ...
+
     @property
     def _value_or_other(self) -> ValueT | OtherT:
         raise NotImplementedError
@@ -169,15 +179,25 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
         return result.is_negative
 
     @override
-    def copy(self) -> Self:
+    def copy(self) -> Result[ValueT, OtherT]:
         raise NotImplementedError
 
     @override
-    def deepcopy(self) -> Self:
+    def deepcopy(self) -> Result[ValueT, OtherT]:
         raise NotImplementedError
 
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Done[ValueT, OtherT]: ...
+
+        @override
+        def __deepcopy__(
+            self, memo: dict[Any, Any] | None = None
+        ) -> Done[ValueT, OtherT]: ...
+
     @property
     @override
     def _value_or_other(self) -> ValueT:
@@ -275,6 +295,16 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
 
 
 class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
+    if TYPE_CHECKING:
+
+        @override
+        def __copy__(self) -> Error[ValueT, OtherT]: ...
+
+        @override
+        def __deepcopy__(
+            self, memo: dict[Any, Any] | None = None
+        ) -> Error[ValueT, OtherT]: ...
+
     __slots__ = ("_value", "_other")
 
     @property
