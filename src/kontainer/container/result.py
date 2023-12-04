@@ -186,6 +186,14 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def deepcopy(self) -> Result[ValueT, OtherT]:
         raise NotImplementedError
 
+    @override
+    def ensure_positive(self) -> Done[ValueT, OtherT]:
+        raise NotImplementedError
+
+    @override
+    def ensure_negative(self) -> Error[ValueT, OtherT]:
+        raise NotImplementedError
+
 
 class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     if TYPE_CHECKING:
@@ -292,6 +300,15 @@ class Done(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     def deepcopy(self) -> Done[ValueT, OtherT]:
         new = deepcopy(self._value)
         return self.done(new)
+
+    @override
+    def ensure_positive(self) -> Done[ValueT, OtherT]:
+        return Done(self._value)
+
+    @override
+    def ensure_negative(self) -> Error[ValueT, OtherT]:
+        error_msg = f"{self!r} is not error"
+        raise KontainerTypeError(error_msg)
 
 
 class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
@@ -423,3 +440,12 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
     def deepcopy(self) -> Error[ValueT, OtherT]:
         new = deepcopy(self._other)
         return self.error(new)
+
+    @override
+    def ensure_positive(self) -> Done[ValueT, OtherT]:
+        error_msg = f"{self!r} is not done"
+        raise KontainerTypeError(error_msg)
+
+    @override
+    def ensure_negative(self) -> Error[ValueT, OtherT]:
+        return Error(self._other)

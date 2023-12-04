@@ -10,6 +10,7 @@ from tests.container.base import BaseTestContainer
 
 from kontainer import undefined
 from kontainer.container.maybe import Maybe, Null, Some
+from kontainer.core.exception import KontainerTypeError
 
 arbitrary = st.one_of(st.integers(), st.text(), st.binary(), st.tuples(st.integers()))
 
@@ -190,3 +191,29 @@ def test_null_check(value: Any):
     maybe = Maybe.null(value)
     assert isinstance(maybe, Null)
     assert maybe.is_null(maybe)
+
+
+@given(arbitrary)
+def test_ensure_positive(value: Any):
+    some = Maybe.some(value)
+    new = some.ensure_positive()
+    assert isinstance(new, Some)
+    assert some.unwrap() == new.unwrap()
+
+
+def test_ensure_positive_error():
+    null = Maybe.null(None)
+    with pytest.raises(KontainerTypeError):
+        null.ensure_positive()
+
+
+def test_ensure_negative():
+    null = Maybe.null(None)
+    new = null.ensure_negative()
+    assert isinstance(new, Null)
+
+
+def test_ensure_negative_error():
+    some = Maybe.some(None)
+    with pytest.raises(KontainerTypeError):
+        some.ensure_negative()

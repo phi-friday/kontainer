@@ -382,3 +382,29 @@ def test_unwrap_error_or_with_done(value: Any):
     assert isinstance(done, Done)
     with pytest.raises(KontainerTypeError, match="Not an error container"):
         done.unwrap_error_or_with(func)
+
+
+@given(arbitrary)
+def test_ensure_positive(value: Any):
+    done = Result.done(value)
+    new = done.ensure_positive()
+    assert isinstance(new, Done)
+    assert done.unwrap() == new.unwrap()
+
+
+def test_ensure_positive_error():
+    error = Result.error(ValueError())
+    with pytest.raises(KontainerTypeError):
+        error.ensure_positive()
+
+
+def test_ensure_negative():
+    error = Result.error(ValueError())
+    new = error.ensure_negative()
+    assert isinstance(new, Error)
+
+
+def test_ensure_negative_error():
+    done = Result.done(None)
+    with pytest.raises(KontainerTypeError):
+        done.ensure_negative()

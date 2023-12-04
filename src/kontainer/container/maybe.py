@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast, overloa
 from typing_extensions import Self, TypeGuard, TypeVar, override
 
 from kontainer.core.const import Undefined, undefined
+from kontainer.core.exception import KontainerTypeError
 from kontainer.core.types import Container
 
 ValueT = TypeVar("ValueT", infer_variance=True)
@@ -145,6 +146,14 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     def deepcopy(self) -> Maybe[ValueT]:
         raise NotImplementedError
 
+    @override
+    def ensure_positive(self) -> Some[ValueT]:
+        raise NotImplementedError
+
+    @override
+    def ensure_negative(self) -> Null[ValueT]:
+        raise NotImplementedError
+
 
 class Some(Maybe[ValueT], Generic[ValueT]):
     if TYPE_CHECKING:
@@ -222,6 +231,15 @@ class Some(Maybe[ValueT], Generic[ValueT]):
     def deepcopy(self) -> Some[ValueT]:
         new = deepcopy(self._value)
         return self.some(new)
+
+    @override
+    def ensure_positive(self) -> Some[ValueT]:
+        return Some(self._value)
+
+    @override
+    def ensure_negative(self) -> Null[ValueT]:
+        error_msg = f"{self!r} is not null"
+        raise KontainerTypeError(error_msg)
 
 
 class Null(Maybe[ValueT], Generic[ValueT]):
@@ -304,3 +322,12 @@ class Null(Maybe[ValueT], Generic[ValueT]):
     def deepcopy(self) -> Null[ValueT]:
         new = deepcopy(self._value)
         return self.null(new)
+
+    @override
+    def ensure_positive(self) -> Some[ValueT]:
+        error_msg = f"{self!r} is not some"
+        raise KontainerTypeError(error_msg)
+
+    @override
+    def ensure_negative(self) -> Null[ValueT]:
+        return Null(self._value)
