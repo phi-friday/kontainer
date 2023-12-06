@@ -46,13 +46,13 @@ class _Catch(Generic[ErrorT]):
 
     @overload
     def __call__(
-        self, func: Callable[ParamT, Awaitable[ValueT]]
-    ) -> Callable[ParamT, Result[ValueT, ErrorT]]: ...
+        self, func: Callable[ParamT, Result[ValueT, ErrorT2]]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
 
     @overload
     def __call__(
-        self, func: Callable[ParamT, Result[ValueT, ErrorT2]]
-    ) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
+        self, func: Callable[ParamT, Awaitable[ValueT]]
+    ) -> Callable[ParamT, Result[ValueT, ErrorT]]: ...
 
     @overload
     def __call__(
@@ -64,8 +64,8 @@ class _Catch(Generic[ErrorT]):
         func: Callable[ParamT, Generator[Any, Any, Result[ValueT, ErrorT2]]]
         | Callable[ParamT, Generator[Any, Any, ValueT]]
         | Callable[ParamT, Awaitable[Result[ValueT, ErrorT2]]]
-        | Callable[ParamT, Awaitable[ValueT]]
         | Callable[ParamT, Result[ValueT, ErrorT2]]
+        | Callable[ParamT, Awaitable[ValueT]]
         | Callable[ParamT, ValueT],
     ) -> (
         Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]
@@ -124,14 +124,14 @@ def catch(
 
 @overload
 def catch(
-    func: Callable[ParamT, Awaitable[ValueT]], /
-) -> Callable[ParamT, Result[ValueT, Exception]]: ...
+    func: Callable[ParamT, Result[ValueT, ErrorT]], /
+) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
 
 
 @overload
 def catch(
-    func: Callable[ParamT, Result[ValueT, ErrorT]], /
-) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
+    func: Callable[ParamT, Awaitable[ValueT]], /
+) -> Callable[ParamT, Result[ValueT, Exception]]: ...
 
 
 @overload
@@ -166,14 +166,14 @@ def catch(
 
 @overload
 def catch(
-    func: Callable[ParamT, Awaitable[ValueT]], /, *, error_type: type[ErrorT2]
-) -> Callable[ParamT, Result[ValueT, ErrorT2]]: ...
+    func: Callable[ParamT, Result[ValueT, ErrorT]], /, *, error_type: type[ErrorT2]
+) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
 
 
 @overload
 def catch(
-    func: Callable[ParamT, Result[ValueT, ErrorT]], /, *, error_type: type[ErrorT2]
-) -> Callable[ParamT, Result[ValueT, ErrorT | ErrorT2]]: ...
+    func: Callable[ParamT, Awaitable[ValueT]], /, *, error_type: type[ErrorT2]
+) -> Callable[ParamT, Result[ValueT, ErrorT2]]: ...
 
 
 @overload
@@ -211,14 +211,14 @@ def catch(
 
 @overload
 def catch(
-    func: Callable[ParamT, Awaitable[ValueT]], /, *, error_type: type[Exception]
-) -> Callable[ParamT, Result[ValueT, Exception]]: ...
+    func: Callable[ParamT, Result[ValueT, ErrorT]], /, *, error_type: type[Exception]
+) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
 
 
 @overload
 def catch(
-    func: Callable[ParamT, Result[ValueT, ErrorT]], /, *, error_type: type[Exception]
-) -> Callable[ParamT, Result[ValueT, ErrorT | Exception]]: ...
+    func: Callable[ParamT, Awaitable[ValueT]], /, *, error_type: type[Exception]
+) -> Callable[ParamT, Result[ValueT, Exception]]: ...
 
 
 @overload
@@ -231,8 +231,8 @@ def catch(
     func: Callable[ParamT, Generator[Any, Any, Result[ValueT, ErrorT]]]
     | Callable[ParamT, Generator[Any, Any, ValueT]]
     | Callable[ParamT, Awaitable[Result[ValueT, ErrorT]]]
-    | Callable[ParamT, Awaitable[ValueT]]
     | Callable[ParamT, Result[ValueT, ErrorT]]
+    | Callable[ParamT, Awaitable[ValueT]]
     | Callable[ParamT, ValueT]
     | None = None,
     *,
