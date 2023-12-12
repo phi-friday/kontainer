@@ -31,13 +31,16 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
         self._value = value
 
     @overload
+    def __new__(cls, value: Undefined | None) -> Maybe[Any]: ...
+
+    @overload
     def __new__(cls, value: Undefined) -> Maybe[Any]: ...
 
     @overload
     def __new__(cls, value: None) -> Maybe[Any]: ...
 
     @overload
-    def __new__(cls, value: Undefined | None) -> Maybe[Any]: ...
+    def __new__(cls, value: ValueT | Undefined | None) -> Maybe[ValueT]: ...
 
     @overload
     def __new__(cls, value: ValueT | Undefined) -> Maybe[ValueT]: ...
@@ -46,7 +49,7 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     def __new__(cls, value: ValueT | None) -> Maybe[ValueT]: ...
 
     @overload
-    def __new__(cls, value: ValueT | Undefined | None) -> Maybe[ValueT]: ...
+    def __new__(cls, value: ValueT) -> Maybe[ValueT]: ...
 
     @override
     def __new__(cls, value: ValueT | Undefined | None) -> Maybe[ValueT]:
@@ -162,6 +165,10 @@ class Maybe(Container[ValueT, None], Generic[ValueT]):
     @override
     def ensure_negative(self) -> Null[ValueT]:
         raise NotImplementedError
+
+    @classmethod
+    def of(cls, value: OtherT) -> Some[OtherT]:
+        return Some(value)
 
 
 class Some(Maybe[ValueT], Generic[ValueT]):
