@@ -10,26 +10,28 @@ packages = [{ include = "kontainer", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.8, <3.13"
-typing-extensions = ">=4.4.0"
+typing-extensions = "~=4.9.0"
 
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.1.6"
-pytest = "^7.4.3"
-pytest-icdiff = "^0.8"
-anyio = "^4.0.0"
-uvloop = "^0.19.0"
-trio = "^0.22.2"
-hypothesis = "^6.88.1"
-pytest-cov = "^4.1.0"
-pre-commit = "^3.5.0"
+ruff = "0.2.2"
+pytest = "~8.0.0"
+pytest-icdiff = "~=0.8"
+anyio = "~=4.3.0"
+uvloop = "~=0.19.0"
+trio = "~=0.24.0"
+hypothesis = "~=6.88.0"
+pytest-cov = "~=4.1.0"
+pre-commit = "~=3.5.0"
 
 [tool.poetry.group.notebook.dependencies]
-ipykernel = "^6.26.0"
+ipykernel = "~=6.29.0"
 
 [tool.ruff]
 line-length = 88
 target-version = "py38"
+
+[tool.ruff.lint]
 select = ["ALL"]
 fixable = [
     "UP",
@@ -111,7 +113,7 @@ ignore = [
     "D103",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "./tests/**/*.py" = [
     "TCH001",
     "TCH002",
@@ -135,10 +137,10 @@ preview = true
 quote-style = "double"
 skip-magic-trailing-comma = true
 
-[tool.ruff.pylint]
+[tool.ruff.lint.pylint]
 max-args = 10
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-local-folder = ['kontainer']
 required-imports = ["from __future__ import annotations"]
 # ruff format
