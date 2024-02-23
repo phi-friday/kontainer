@@ -142,15 +142,13 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
     def unwrap_error(self) -> NoReturn:
         raise NotImplementedError
 
-    def unwrap_error_or(self, value: AnotherT) -> AnotherT | NoReturn:
+    def unwrap_error_or(self, value: AnotherT) -> AnotherT:
         raise NotImplementedError
 
-    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
+    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT:
         raise NotImplementedError
 
-    def unwrap_error_or_with(
-        self, func: Callable[[OtherT], AnotherT]
-    ) -> AnotherT | NoReturn:
+    def unwrap_error_or_with(self, func: Callable[[OtherT], AnotherT]) -> AnotherT:
         raise NotImplementedError
 
     @property
@@ -168,13 +166,13 @@ class Result(Container[ValueT, OtherT], Generic[ValueT, OtherT]):
 
     @staticmethod
     def is_done(
-        result: Result[AnotherT, ElementT]
+        result: Result[AnotherT, ElementT],
     ) -> TypeGuard[Done[AnotherT, ElementT]]:
         return result.is_positive
 
     @staticmethod
     def is_error(
-        result: Result[ElementT, AnotherT]
+        result: Result[ElementT, AnotherT],
     ) -> TypeGuard[Error[ElementT, AnotherT]]:
         return result.is_negative
 
@@ -413,13 +411,13 @@ class Error(Result[ValueT, OtherT], Generic[ValueT, OtherT]):
         raise self._other
 
     @override
-    def unwrap_error_or(self, value: AnotherT) -> AnotherT | NoReturn:
+    def unwrap_error_or(self, value: AnotherT) -> AnotherT:
         if isinstance(self._other, Exception):
             raise self._other
         return value
 
     @override
-    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT | NoReturn:
+    def unwrap_error_or_else(self, func: Callable[[], AnotherT]) -> AnotherT:
         if isinstance(self._other, Exception):
             raise self._other
         return func()

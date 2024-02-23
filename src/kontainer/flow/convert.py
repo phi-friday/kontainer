@@ -24,12 +24,12 @@ def toggle(container: Maybe[ValueT]) -> Result[ValueT, None]: ...
 
 @overload
 def toggle(
-    container: Maybe[ValueT] | Result[ValueT, Any]
+    container: Maybe[ValueT] | Result[ValueT, Any],
 ) -> Result[ValueT, None] | Maybe[ValueT]: ...
 
 
 def toggle(
-    container: Maybe[ValueT] | Result[ValueT, Any]
+    container: Maybe[ValueT] | Result[ValueT, Any],
 ) -> Result[ValueT, None] | Maybe[ValueT]:
     from kontainer.container.maybe import Null, Some
     from kontainer.container.result import Done, Error

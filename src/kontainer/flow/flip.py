@@ -18,7 +18,7 @@ ERROR_PARAM_KIND = frozenset({Parameter.KEYWORD_ONLY, Parameter.VAR_KEYWORD})
 
 
 def flip_func(
-    func: Callable[[ValueT1, ValueT2, Unpack[ArgsT]], OtherT]
+    func: Callable[[ValueT1, ValueT2, Unpack[ArgsT]], OtherT],
 ) -> Callable[[ValueT2, ValueT1, Unpack[ArgsT]], OtherT]:
     sig = signature(func)
     length = len(sig.parameters)
@@ -48,6 +48,6 @@ def flip_func(
 
 
 def flip(
-    values: tuple[ValueT1, ValueT2, Unpack[ArgsT]]
+    values: tuple[ValueT1, ValueT2, Unpack[ArgsT]],
 ) -> tuple[ValueT2, ValueT1, Unpack[ArgsT]]:
     return (values[1], values[0], *values[2:])  # type: ignore

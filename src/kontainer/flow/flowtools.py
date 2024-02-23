@@ -54,7 +54,7 @@ __all__ = [
 
 
 def curry(
-    func: Callable[Concatenate[_T1, ParamT], ResultT]
+    func: Callable[Concatenate[_T1, ParamT], ResultT],
 ) -> Callable[[_T1], Callable[ParamT, ResultT]]:
     def outer(arg1: _T1, /) -> Callable[ParamT, ResultT]:
         def inner(*args: ParamT.args, **kwargs: ParamT.kwargs) -> ResultT:
@@ -66,7 +66,7 @@ def curry(
 
 
 def curry2(
-    func: Callable[Concatenate[_T1, _T2, ParamT], ResultT]
+    func: Callable[Concatenate[_T1, _T2, ParamT], ResultT],
 ) -> Callable[[_T1], Callable[[_T2], Callable[ParamT, ResultT]]]:
     def outer(arg1: _T1, /) -> Callable[[_T2], Callable[ParamT, ResultT]]:
         def outer2(arg2: _T2, /) -> Callable[ParamT, ResultT]:
@@ -81,7 +81,7 @@ def curry2(
 
 
 def curry3(
-    func: Callable[Concatenate[_T1, _T2, _T3, ParamT], ResultT]
+    func: Callable[Concatenate[_T1, _T2, _T3, ParamT], ResultT],
 ) -> Callable[[_T1], Callable[[_T2], Callable[[_T3], Callable[ParamT, ResultT]]]]:
     def outer(
         arg1: _T1, /
@@ -129,7 +129,7 @@ class Infinite(Iterable[SourceT], Generic[SourceT]):
 
 
 def append(
-    *others: Iterable[SourceT]
+    *others: Iterable[SourceT],
 ) -> Callable[[Iterable[SourceT]], Iterable[SourceT]]:
     """Append sequence to other sequences.
 
@@ -211,12 +211,12 @@ def init_infinite(initializer: None) -> Iterable[int]: ...
 
 @overload
 def init_infinite(
-    initializer: Callable[[int], SourceT] | None
+    initializer: Callable[[int], SourceT] | None,
 ) -> Iterable[SourceT]: ...
 
 
 def init_infinite(
-    initializer: Callable[[int], SourceT] | None = None
+    initializer: Callable[[int], SourceT] | None = None,
 ) -> Iterable[SourceT] | Iterable[int]:
     """Generate infinite sequence.
 
@@ -236,24 +236,24 @@ def init_infinite(
 
 @overload
 def starmap(
-    mapper: Callable[[_T1, _T2], ResultT]
+    mapper: Callable[[_T1, _T2], ResultT],
 ) -> Callable[[Iterable[tuple[_T1, _T2]]], Iterable[ResultT]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_T1, _T2, _T3], ResultT]
+    mapper: Callable[[_T1, _T2, _T3], ResultT],
 ) -> Callable[[Iterable[tuple[_T1, _T2, _T3]]], Iterable[ResultT]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_T1, _T2, _T3, _T4], ResultT]
+    mapper: Callable[[_T1, _T2, _T3, _T4], ResultT],
 ) -> Callable[[Iterable[tuple[_T1, _T2, _T3, _T4]]], Iterable[ResultT]]: ...
 
 
 def starmap(
-    mapper: Callable[..., ResultT]
+    mapper: Callable[..., ResultT],
 ) -> Callable[[Iterable[Any]], Iterable[ResultT]]:
     """Starmap source sequence.
 
@@ -272,13 +272,13 @@ def starmap(
 
 
 def map2(
-    mapper: Callable[[_T1, _T2], ResultT]
+    mapper: Callable[[_T1, _T2], ResultT],
 ) -> Callable[[Iterable[tuple[_T1, _T2]]], Iterable[ResultT]]:
     return starmap(mapper)
 
 
 def map3(
-    mapper: Callable[[_T1, _T2, _T3], ResultT]
+    mapper: Callable[[_T1, _T2, _T3], ResultT],
 ) -> Callable[[Iterable[tuple[_T1, _T2, _T3]]], Iterable[ResultT]]:
     return starmap(mapper)
 
@@ -395,7 +395,7 @@ def unfold(
 
 
 def zip(  # noqa: A001
-    source1: Iterable[SourceT]
+    source1: Iterable[SourceT],
 ) -> Callable[[Iterable[ResultT]], Iterable[tuple[SourceT, ResultT]]]:
     """Zip sequence with other.
 

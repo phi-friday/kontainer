@@ -510,17 +510,17 @@ if TYPE_CHECKING:
 
     @overload
     def compose_bind_funcs(
-        *funcs: Callable[[Any], Maybe[Any]]
+        *funcs: Callable[[Any], Maybe[Any]],
     ) -> Callable[[Any], Maybe[Any]]: ...
 
     @overload
     def compose_bind_funcs(
-        *funcs: Callable[[Any], Result[Any, Any]]
+        *funcs: Callable[[Any], Result[Any, Any]],
     ) -> Callable[[Any], Result[Any, Any]]: ...
 
     @overload
     def compose_bind_funcs(
-        *funcs: Callable[[Any], Container[Any, Any]]
+        *funcs: Callable[[Any], Container[Any, Any]],
     ) -> Callable[[Any], Container[Any, Any]]: ...
 
 
@@ -562,7 +562,7 @@ def compose_funcs(*funcs: Callable[[Any], Any]) -> Callable[[Any], Any]:
 
 
 def compose_bind_funcs(
-    *funcs: Callable[[Any], Container[Any, Any]]
+    *funcs: Callable[[Any], Container[Any, Any]],
 ) -> Callable[[Any], Container[Any, Any]]:
     if not funcs:
         from kontainer.container.maybe import Some

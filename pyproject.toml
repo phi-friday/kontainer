@@ -58,6 +58,7 @@ fixable = [
     "W291",   # trailing-whitespace
     "RUF010", # explicit-f-string-type-conversion
     "FLY002", # static-join-to-f-string
+    "RUF020", # never-union
 ]
 ignore = [
     'TD',     # flake8-todos
@@ -91,6 +92,7 @@ ignore = [
     "D105",   # undocumented-magic-method
     "TD",     # flake8-todos
     "FIX",    # flake8-fixme
+    "D413",   # blank-line-after-last-section 
     # ruff format
     "W191",    # tab-indentation
     "E111",    # indentation-with-invalid-multiple

@@ -18,43 +18,43 @@ __all__ = ["optional"]
 
 @overload
 def optional(
-    func: Callable[ParamT, Generator[Any, Any, None]]
+    func: Callable[ParamT, Generator[Any, Any, None]],
 ) -> Callable[ParamT, Maybe[Any]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Generator[Any, Any, Maybe[ValueT]]]
+    func: Callable[ParamT, Generator[Any, Any, Maybe[ValueT]]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Generator[Any, Any, ValueT | None]]
+    func: Callable[ParamT, Generator[Any, Any, ValueT | None]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Generator[Any, Any, ValueT]]
+    func: Callable[ParamT, Generator[Any, Any, ValueT]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Awaitable[Maybe[ValueT]]]
+    func: Callable[ParamT, Awaitable[Maybe[ValueT]]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Maybe[ValueT]]
+    func: Callable[ParamT, Maybe[ValueT]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
 @overload
 def optional(
-    func: Callable[ParamT, Awaitable[ValueT]]
+    func: Callable[ParamT, Awaitable[ValueT]],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
@@ -64,7 +64,7 @@ def optional(func: Callable[ParamT, None]) -> Callable[ParamT, Maybe[Any]]: ...
 
 @overload
 def optional(
-    func: Callable[ParamT, ValueT | None]
+    func: Callable[ParamT, ValueT | None],
 ) -> Callable[ParamT, Maybe[ValueT]]: ...
 
 
