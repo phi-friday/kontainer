@@ -17,4 +17,4 @@ def test_version():
     with pyproject.open("rb") as f:
         data = toml.load(f)
 
-    assert data["tool"]["poetry"]["version"] == __version__
+    assert data["project"]["version"] == __version__
