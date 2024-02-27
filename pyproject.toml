@@ -1,12 +1,12 @@
-[tool.poetry]
+[project]
 name = "kontainer"
-version = "0.1.0"
+version = "0.0.0"
 description = "How to look like functional programming"
-authors = ["phi <phi.friday@gmail.com>"]
+authors = [
+    { name = "phi", email = "phi.friday@gmail.com" }
+]
 readme = "README.md"
-license = "MIT License"
-repository = "https://github.com/phi-friday/kontainer"
-packages = [{ include = "kontainer", from = "src" }]
+license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -17,25 +17,38 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
+requires-python = ">= 3.8"
+dependencies = [
+    "typing-extensions>=4.10.0",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8, <3.13"
-typing-extensions = ">=4.9.0"
+[project.urls]
+Repository = "https://github.com/phi-friday/kontainer"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.group.dev.dependencies]
-ruff = "0.2.2"
-pytest = ">8.0.0"
-pytest-icdiff = ">=0.8"
-anyio = ">=4.3.0"
-uvloop = ">=0.19.0"
-trio = ">=0.24.0"
-hypothesis = ">=6.88.0"
-pytest-cov = ">=4.1.0"
-pre-commit = ">=3.5.0"
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "ruff==0.2.2",
+    "pytest>=8.0.0",
+    "pytest-icdiff>=0.8",
+    "anyio>=4.3.0",
+    "uvloop>=0.19.0",
+    "trio>=0.24.0",
+    "hypothesis>=6.88.0",
+    "pytest-cov>=4.1.0",
+    "pre-commit>=3.5.0",
+    "ipykernel>=6.29.0",
+]
 
-[tool.poetry.group.notebook.dependencies]
-ipykernel = ">=6.29.0"
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kontainer"]
 
 [tool.ruff]
 line-length = 88
@@ -179,7 +192,3 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "raise NotImplementedError",
 ]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
