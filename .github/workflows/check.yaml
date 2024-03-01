@@ -47,7 +47,7 @@ jobs:
 
       - name: Load cached pre-commit
         id: cached-pre-commit-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: precommit-${{ runner.os }}-${{ steps.set-python.outputs.python_version }}-${{ hashFiles('.pre-commit-config.yaml') }}
