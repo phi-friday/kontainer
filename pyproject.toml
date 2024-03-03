@@ -32,7 +32,7 @@ build-backend = "hatchling.build"
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "ruff==0.2.2",
+    "ruff==0.3.0",
     "pytest>=8.0.0",
     "pytest-icdiff>=0.8",
     "anyio>=4.3.0",
